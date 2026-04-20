@@ -133,6 +133,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 
         .auth-field { transition: all 0.3s ease; overflow: hidden; }
         .auth-field.hidden { opacity: 0; max-height: 0; padding-top: 0; padding-bottom: 0; margin: 0; pointer-events: none; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(59, 143, 212, 0.3); border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -264,7 +268,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 
     <main id="page-admin" class="page max-w-7xl mx-auto px-6 pt-16 pb-20">
         <h2 class="text-4xl font-bold mb-4 text-white">Painel do <span class="text-amber-400">Administrador</span></h2>
-        <p class="text-slate-400 mb-12">Área restrita para gestão. <b>Nota:</b> A Chave de API da Groq agora é gerida de forma segura no painel do Render via Variáveis de Ambiente, portanto não precisa de a inserir aqui.</p>
+        <p class="text-slate-400 mb-12">Área restrita para gestão. <b>Nota de Segurança:</b> A Chave de API está segura no ambiente do Render e removida deste painel.</p>
 
         <!-- Configuração IA -->
         <div class="glass-card p-8 border-t-4 border-t-cyan-400 mb-12">
@@ -281,7 +285,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                         <label class="block text-xs font-bold text-cyan-400 uppercase mb-2">Contexto Base</label>
                         <textarea id="cfgContext" class="form-input h-24 focus:border-cyan-400" placeholder="Ajudar a IA a entender o que fazemos..."></textarea>
                     </div>
-                    <button onclick="saveSettings()" class="w-full bg-cyan-500 text-slate-900 font-bold py-3 rounded-xl hover:bg-cyan-400 transition-all mt-auto">Salvar Inteligência</button>
+                    <button onclick="saveSettings()" class="w-full bg-cyan-500 text-slate-900 font-bold py-3 rounded-xl hover:bg-cyan-400 transition-all mt-auto shadow-lg shadow-cyan-500/20">Salvar Inteligência</button>
                 </div>
             </div>
         </div>
@@ -290,7 +294,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         <div class="glass-card p-8 border-t-4 border-t-amber-400 mb-12">
             <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
                 <h3 class="text-2xl font-bold text-white">Catálogo de Produtos & Serviços</h3>
-                <button onclick="openAdminCatalogModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold py-2 px-6 rounded-xl transition-colors shadow-lg">+ Novo Item</button>
+                <button onclick="openAdminCatalogModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold py-2 px-6 rounded-xl transition-colors shadow-lg shadow-amber-500/20">+ Novo Item</button>
             </div>
             <div class="overflow-x-auto"><table class="w-full text-left text-sm text-slate-300">
                 <thead class="text-xs text-amber-400 uppercase bg-slate-800/50"><tr><th class="px-4 py-3">Tipo</th><th class="px-4 py-3">Título</th><th class="px-4 py-3 text-right">Ações</th></tr></thead>
@@ -302,7 +306,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         <div class="glass-card p-8 border-t-4 border-t-blue-500">
             <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
                 <h3 class="text-2xl font-bold text-white">Gestão de Projetos</h3>
-                <button onclick="openAdminProjectModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-xl transition-colors shadow-lg">+ Novo Projeto</button>
+                <button onclick="openAdminProjectModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-xl transition-colors shadow-lg shadow-blue-500/20">+ Novo Projeto</button>
             </div>
             <div class="overflow-x-auto"><table class="w-full text-left text-sm text-slate-300">
                 <thead class="text-xs text-blue-400 uppercase bg-slate-800/50"><tr><th class="px-4 py-3">Setor</th><th class="px-4 py-3">Projeto</th><th class="px-4 py-3 text-right">Ações</th></tr></thead>
@@ -311,81 +315,100 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </main>
 
-    <!-- Modal Admin Catálogo -->
+    <!-- NOVO MODAL: Edição de Catálogo -->
     <div id="adminCatalogModal" class="modal-overlay" onclick="closeAdminCatalogModal(event)">
-        <div class="glass-card modal-content w-full max-w-3xl mx-4 p-8 bg-slate-900 border-amber-500/50" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
-                <h3 class="text-2xl font-bold text-white" id="catalogModalTitle">Adicionar Item</h3>
-                <button onclick="closeAdminCatalogModal()" class="text-slate-400 hover:text-white text-2xl font-bold transition-colors">✕</button>
+        <div class="glass-card modal-content w-full max-w-5xl mx-4 flex flex-col md:flex-row overflow-hidden bg-slate-900/95 border-amber-500/40" onclick="event.stopPropagation()">
+            <div class="w-full md:w-1/2 h-64 md:h-auto relative bg-slate-800 flex items-center justify-center group border-r border-slate-700/50">
+                <img id="itemPreview" src="" class="absolute inset-0 w-full h-full object-cover hidden z-0">
+                <div class="absolute inset-0 bg-slate-900/40 group-hover:bg-slate-900/60 transition-all z-10 flex flex-col items-center justify-center backdrop-blur-[2px]">
+                    <label for="itemImageFile" class="cursor-pointer bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-xl transition-all shadow-lg transform group-hover:scale-105 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        Carregar Imagem
+                    </label>
+                    <input type="file" id="itemImageFile" accept="image/*" class="hidden">
+                    <p class="text-xs text-amber-200 mt-3 font-medium bg-black/50 px-3 py-1 rounded-full">Recomendado: Imagens Horizontais</p>
+                </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="space-y-4">
-                    <input type="hidden" id="editCatalogId" value="">
+            
+            <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative">
+                <button onclick="closeAdminCatalogModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors text-2xl font-bold z-20">✕</button>
+                
+                <span class="text-amber-400 text-xs font-bold uppercase tracking-widest mb-2 border border-amber-500/30 bg-amber-500/10 w-fit px-3 py-1 rounded-full">Gestão de Catálogo</span>
+                <h3 class="text-3xl font-bold text-white mb-6 leading-tight" id="catalogModalTitle">Adicionar Item</h3>
+                
+                <input type="hidden" id="editCatalogId" value="">
+                
+                <div class="space-y-5 mb-8">
                     <div>
                         <label class="block text-xs font-bold text-amber-400 uppercase mb-2">Tipo de Item</label>
-                        <select id="itemType" class="form-input bg-slate-950 focus:border-amber-400"><option value="produto">📦 Produto</option><option value="servico">🔧 Serviço</option></select>
+                        <select id="itemType" class="form-input bg-slate-950 focus:border-amber-400">
+                            <option value="produto">📦 Produto (Equipamento)</option>
+                            <option value="servico">🔧 Serviço Técnico</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-amber-400 uppercase mb-2">Título do Item</label>
-                        <input type="text" id="itemTitle" class="form-input focus:border-amber-400">
+                        <input type="text" id="itemTitle" class="form-input focus:border-amber-400" placeholder="Ex: CLP Siemens S7-1200">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-amber-400 uppercase mb-2">Imagem (Upload)</label>
-                        <input type="file" id="itemImageFile" accept="image/*" class="form-input p-2 bg-slate-950 cursor-pointer text-sm">
-                        <img id="itemPreview" src="" class="h-20 w-auto mt-3 hidden rounded-lg border border-slate-700 object-cover">
+                        <label class="block text-xs font-bold text-amber-400 uppercase mb-2">Descrição Detalhada</label>
+                        <textarea id="itemDesc" class="form-input h-32 focus:border-amber-400 custom-scrollbar" placeholder="Insira as especificações..."></textarea>
                     </div>
                 </div>
-                <div class="space-y-4 flex flex-col">
-                    <div class="flex-1">
-                        <label class="block text-xs font-bold text-amber-400 uppercase mb-2">Descrição Detalhada</label>
-                        <textarea id="itemDesc" class="form-input h-full min-h-[140px] focus:border-amber-400"></textarea>
-                    </div>
-                    <div class="flex gap-3 mt-4">
-                        <button onclick="closeAdminCatalogModal()" class="flex-1 bg-slate-700 text-white font-bold py-3 rounded-xl hover:bg-slate-600 transition-colors">Cancelar</button>
-                        <button onclick="saveCatalogItem()" class="flex-1 bg-amber-500 text-slate-900 font-bold py-3 rounded-xl hover:bg-amber-400 transition-colors">Salvar</button>
-                    </div>
+                
+                <div class="flex gap-3 mt-auto border-t border-white/5 pt-6">
+                    <button onclick="closeAdminCatalogModal()" class="flex-1 bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-700 transition-colors border border-slate-700">Cancelar</button>
+                    <button onclick="saveCatalogItem()" class="flex-1 bg-amber-500 text-slate-900 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition-colors shadow-lg shadow-amber-500/20">Salvar Alterações</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Admin Projeto -->
+    <!-- NOVO MODAL: Edição de Projetos -->
     <div id="adminProjectModal" class="modal-overlay" onclick="closeAdminProjectModal(event)">
-        <div class="glass-card modal-content w-full max-w-4xl mx-4 p-8 bg-slate-900 border-blue-500/50" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
-                <h3 class="text-2xl font-bold text-white" id="projectModalTitle">Adicionar Projeto</h3>
-                <button onclick="closeAdminProjectModal()" class="text-slate-400 hover:text-white text-2xl font-bold transition-colors">✕</button>
+        <div class="glass-card modal-content w-full max-w-5xl mx-4 flex flex-col md:flex-row overflow-hidden bg-slate-900/95 border-blue-500/40" onclick="event.stopPropagation()">
+            <div class="w-full md:w-1/2 h-64 md:h-auto relative bg-slate-800 flex items-center justify-center group border-r border-slate-700/50">
+                <img id="projPreview" src="" class="absolute inset-0 w-full h-full object-cover hidden z-0">
+                <div class="absolute inset-0 bg-slate-900/40 group-hover:bg-slate-900/60 transition-all z-10 flex flex-col items-center justify-center backdrop-blur-[2px]">
+                    <label for="projImageFile" class="cursor-pointer bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg transform group-hover:scale-105 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        Carregar Imagem
+                    </label>
+                    <input type="file" id="projImageFile" accept="image/*" class="hidden">
+                    <p class="text-xs text-blue-200 mt-3 font-medium bg-black/50 px-3 py-1 rounded-full">Recomendado: Imagens Horizontais</p>
+                </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="space-y-4">
-                    <input type="hidden" id="editProjectId" value="">
+            
+            <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative">
+                <button onclick="closeAdminProjectModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors text-2xl font-bold z-20">✕</button>
+                
+                <span class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2 border border-blue-500/30 bg-blue-500/10 w-fit px-3 py-1 rounded-full">Gestão de Projetos</span>
+                <h3 class="text-3xl font-bold text-white mb-6 leading-tight" id="projectModalTitle">Adicionar Projeto</h3>
+                
+                <input type="hidden" id="editProjectId" value="">
+                
+                <div class="space-y-4 mb-6 overflow-y-auto pr-2 custom-scrollbar" style="max-height: 40vh;">
                     <div>
-                        <label class="block text-xs font-bold text-blue-400 uppercase mb-2">Categoria (Setor)</label>
+                        <label class="block text-xs font-bold text-blue-400 uppercase mb-1.5">Setor / Categoria</label>
                         <input type="text" id="projCat" class="form-input focus:border-blue-400" placeholder="Ex: Farmacêutica">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-blue-400 uppercase mb-2">Título do Projeto</label>
-                        <input type="text" id="projTitle" class="form-input focus:border-blue-400">
+                        <label class="block text-xs font-bold text-blue-400 uppercase mb-1.5">Título do Projeto</label>
+                        <input type="text" id="projTitle" class="form-input focus:border-blue-400" placeholder="Ex: Automação de Linha 1">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-blue-400 uppercase mb-2">Imagem (Upload)</label>
-                        <input type="file" id="projImageFile" accept="image/*" class="form-input p-2 bg-slate-950 cursor-pointer text-sm">
-                        <img id="projPreview" src="" class="h-20 w-auto mt-3 hidden rounded-lg border border-slate-700 object-cover">
+                        <label class="block text-xs font-bold text-blue-400 uppercase mb-1.5">Descrição Completa</label>
+                        <textarea id="projDesc" class="form-input h-24 focus:border-blue-400 custom-scrollbar" placeholder="Detalhes da implementação..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-green-400 uppercase mb-1.5">Resultados Obtidos</label>
+                        <textarea id="projResults" class="form-input h-20 focus:border-green-400 custom-scrollbar" placeholder="Ex: Aumento de 30% na produção..."></textarea>
                     </div>
                 </div>
-                <div class="space-y-4 flex flex-col">
-                    <div>
-                        <label class="block text-xs font-bold text-blue-400 uppercase mb-2">Descrição Completa</label>
-                        <textarea id="projDesc" class="form-input h-24 focus:border-blue-400"></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-green-400 uppercase mb-2">Resultados Obtidos</label>
-                        <textarea id="projResults" class="form-input h-24 focus:border-green-400"></textarea>
-                    </div>
-                    <div class="flex gap-3 mt-4">
-                        <button onclick="closeAdminProjectModal()" class="flex-1 bg-slate-700 text-white font-bold py-3 rounded-xl hover:bg-slate-600 transition-colors">Cancelar</button>
-                        <button onclick="saveProjectItem()" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-500 transition-colors">Salvar</button>
-                    </div>
+                
+                <div class="flex gap-3 mt-auto pt-4 border-t border-white/5">
+                    <button onclick="closeAdminProjectModal()" class="flex-1 bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-700 transition-colors border border-slate-700">Cancelar</button>
+                    <button onclick="saveProjectItem()" class="flex-1 bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">Salvar Projeto</button>
                 </div>
             </div>
         </div>
@@ -403,7 +426,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
     <div id="projectModal" class="modal-overlay" onclick="closeProjectModal(event)">
         <div class="glass-card modal-content w-full max-w-5xl mx-4 flex flex-col md:flex-row overflow-hidden bg-slate-900/90 border-cyan-500/30" onclick="event.stopPropagation()">
             <div class="w-full md:w-1/2 h-64 md:h-auto relative bg-slate-800"><img id="modalImg" src="" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-r from-transparent to-slate-900/90 hidden md:block"></div><div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent md:hidden"></div></div>
-            <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative"><button onclick="closeProjectModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors text-2xl font-bold">✕</button><span id="modalCat" class="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-2 border border-cyan-500/30 bg-cyan-500/10 w-fit px-3 py-1 rounded-full"></span><h3 id="modalTitle" class="text-3xl font-bold text-white mb-6 leading-tight"></h3><div class="space-y-4 mb-8"><p id="modalDesc" class="text-slate-300 text-sm leading-relaxed"></p></div><div class="bg-[#020617] p-5 rounded-xl border border-slate-700 mt-auto"><h4 class="text-white font-bold text-sm mb-3 flex items-center gap-2"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Resultados</h4><p id="modalResults" class="text-cyan-100 text-sm leading-relaxed"></p></div></div>
+            <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative"><button onclick="closeProjectModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors text-2xl font-bold z-20">✕</button><span id="modalCat" class="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-2 border border-cyan-500/30 bg-cyan-500/10 w-fit px-3 py-1 rounded-full"></span><h3 id="modalTitle" class="text-3xl font-bold text-white mb-6 leading-tight"></h3><div class="space-y-4 mb-8"><p id="modalDesc" class="text-slate-300 text-sm leading-relaxed"></p></div><div class="bg-[#020617] p-5 rounded-xl border border-slate-700 mt-auto"><h4 class="text-white font-bold text-sm mb-3 flex items-center gap-2"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Resultados</h4><p id="modalResults" class="text-cyan-100 text-sm leading-relaxed"></p></div></div>
         </div>
     </div>
 
@@ -474,7 +497,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         let catBase64 = ''; setupImageUpload('itemImageFile', 'itemPreview', val => catBase64 = val);
         let projBase64 = ''; setupImageUpload('projImageFile', 'projPreview', val => projBase64 = val);
 
-        // --- MODAIS ADMIN ---
+        // --- MODAIS ADMIN (Edição/Criação com Layout Dividido) ---
         function openAdminCatalogModal(id = null) {
             const modal = document.getElementById('adminCatalogModal');
             if (id) {
@@ -494,7 +517,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 document.getElementById('itemImageFile').value = '';
                 document.getElementById('itemPreview').classList.add('hidden');
                 catBase64 = '';
-                document.getElementById('catalogModalTitle').innerText = "Adicionar ao Catálogo";
+                document.getElementById('catalogModalTitle').innerText = "Adicionar Item";
             }
             modal.classList.add('active');
         }
@@ -551,7 +574,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                         <div class="p-6 flex flex-col flex-1">
                             <span class="inline-flex w-fit px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-3 ${badgeColor}">${badgeIcon}</span>
                             <h3 class="text-xl font-bold text-white mb-2">${item.title}</h3>
-                            <p class="text-slate-400 text-sm mb-6 flex-1">${item.desc}</p>
+                            <p class="text-slate-400 text-sm mb-6 flex-1 line-clamp-3">${item.desc}</p>
                             <button onclick="handleChatRequest('Quero cotação para: ${item.title}')" class="w-full py-2 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-slate-900 rounded-lg">Cotação</button>
                         </div>
                     </div>`;
