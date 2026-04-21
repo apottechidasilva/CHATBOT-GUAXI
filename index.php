@@ -204,7 +204,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
     <div class="grid-background"></div>
     <div class="glow" id="mouseGlow"></div>
 
-    <!-- Navegação -->
     <nav class="sticky top-0 z-50 p-6 glass-card border-none rounded-none border-b border-cyan-500/10 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center w-full">
             <div class="flex items-center gap-2 font-bold text-2xl cursor-pointer" onclick="navigate('home')">
@@ -222,7 +221,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </nav>
 
-    <!-- PÁGINA: LOGIN / CADASTRO -->
     <main id="page-login" class="page max-w-5xl mx-auto px-6 pt-16 pb-20">
         <div class="flex flex-col md:flex-row rounded-[2rem] overflow-hidden shadow-2xl min-h-[600px] border border-white/10">
             <div class="hidden md:flex md:w-1/2 relative bg-slate-900 flex-col justify-center p-12 overflow-hidden">
@@ -276,7 +274,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </main>
 
-    <!-- PÁGINA: HOME -->
     <main id="page-home" class="page active max-w-7xl mx-auto px-6 pt-20 pb-20 text-center">
         <div class="mb-8 inline-block px-4 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-sm font-medium">Líderes em Indústria 4.0</div>
         <h1 class="text-6xl md:text-8xl font-bold mb-8 text-white leading-tight">Engenharia de <br> <span class="text-cyan-400">Próxima Geração.</span></h1>
@@ -287,7 +284,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </main>
 
-    <!-- PÁGINA: CATÁLOGO -->
     <main id="page-catalogo" class="page max-w-7xl mx-auto px-6 pt-16 pb-20">
         <div class="flex flex-col md:flex-row gap-8">
             <div class="w-full md:w-1/4">
@@ -308,14 +304,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </main>
 
-    <!-- PÁGINA: PROJETOS -->
     <main id="page-projetos" class="page max-w-7xl mx-auto px-6 pt-20 pb-20">
         <h2 class="text-4xl font-bold mb-4 text-white">Projetos <span class="text-cyan-400">Realizados</span></h2>
         <p class="text-slate-400 mb-12">Conheça algumas das transformações que implementámos em parceiros industriais. Clique num projeto para ver detalhes.</p>
         <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     </main>
 
-    <!-- PÁGINA: SOBRE NÓS -->
     <main id="page-sobre" class="page max-w-7xl mx-auto px-6 pt-16 pb-20">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <div>
@@ -332,7 +326,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </main>
 
-    <!-- PÁGINA: ADMINISTRAÇÃO -->
     <main id="page-admin" class="page max-w-7xl mx-auto px-6 pt-16 pb-20">
         <h2 class="text-4xl font-bold mb-4 text-white">Painel do <span class="text-amber-400">Administrador</span></h2>
         <p class="text-slate-400 mb-12">Área restrita para gestão. <b>Nota de Segurança:</b> A Chave de API está segura no ambiente do Render e removida deste painel.</p>
