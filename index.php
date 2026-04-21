@@ -53,6 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         :root {
             --primary: #00f2ff;
             --secondary: #0072ff;
+            --chat-primary: #3b82f6; /* Azul moderno para o chat */
+            --chat-secondary: #8b5cf6; /* Roxo vibrante para o chat */
             --bg-dark: #020617;
             --glass: rgba(15, 23, 42, 0.8);
             --border: rgba(0, 242, 255, 0.2);
@@ -84,38 +86,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         .nav-link.active-nav { color: var(--primary); font-weight: 600; }
         .nav-link.active-nav::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 100%; height: 2px; background: var(--primary); box-shadow: 0 0 10px var(--primary); }
 
-        .chat-trigger {
-            position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 25px rgba(0, 114, 255, 0.4);
-            z-index: 1000; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .chat-trigger:hover { transform: scale(1.1) rotate(5deg); }
-
-        #chatWindow {
-            position: fixed; bottom: 110px; right: 30px; width: 420px; height: 600px; max-width: calc(100vw - 60px); max-height: calc(100vh - 160px);
-            display: flex; flex-direction: column; z-index: 1001; transform: translateY(20px) scale(0.95); opacity: 0; pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        #chatWindow.active { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
-
-        .chat-header { background: linear-gradient(135deg, #0f172a, #1e293b); padding: 20px; border-bottom: 1px solid var(--border); border-top-left-radius: 24px; border-top-right-radius: 24px; }
-        .chat-body { flex: 1; overflow-y: auto; padding: 20px; background: #020617; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-        .chat-footer { padding: 15px; background: #0f172a; border-top: 1px solid var(--border); border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; }
-
-        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.5; animation: fadeIn 0.3s ease; word-wrap: break-word; }
-        .msg-bot { align-self: flex-start; background: #1e293b; color: #e2e8f0; border-bottom-left-radius: 4px; border-left: 3px solid var(--primary); }
-        .msg-user { align-self: flex-end; background: linear-gradient(135deg, var(--secondary), var(--primary)); color: white; border-bottom-right-radius: 4px; }
-
-        .typing-indicator { display: none; align-items: center; gap: 4px; padding: 12px 16px; background: #1e293b; border-radius: 16px; align-self: flex-start; }
-        .typing-indicator.active { display: flex; }
-        .typing-indicator span { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #020617; font-weight: 700; padding: 12px 24px; border-radius: 12px; transition: all 0.3s; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 242, 255, 0.3); }
 
         .form-input { width: 100%; background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(0, 242, 255, 0.2); border-radius: 12px; padding: 12px 16px; color: white; outline: none; transition: border-color 0.3s; }
         .form-input:focus { border-color: var(--primary); }
+        
         .login-input { width: 100%; background: white; border: none; border-radius: 8px; padding: 12px 16px; color: #1e293b; outline: none; font-weight: 500; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .login-input::placeholder { color: #94a3b8; font-weight: 400; }
         
@@ -125,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         .cat-btn:hover { background: rgba(30, 41, 59, 0.8); color: white; }
         .cat-btn.active { background: rgba(0, 242, 255, 0.15); color: var(--primary); }
 
-        /* Modals */
+        /* Modals do Admin */
         .modal-overlay { position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content { transform: scale(0.95) translateY(20px); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 90vh; overflow-y: auto; }
@@ -137,6 +113,90 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(59, 143, 212, 0.3); border-radius: 10px; }
+
+        /* ========================================================= */
+        /* NOVO DESIGN DO CHAT (Inspirado no Print)                  */
+        /* ========================================================= */
+        .chat-trigger {
+            position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; 
+            background: linear-gradient(135deg, var(--chat-primary), var(--chat-secondary));
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5);
+            z-index: 1000; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        .chat-trigger:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 15px 35px rgba(139, 92, 246, 0.7); }
+
+        #chatWindow {
+            position: fixed; bottom: 110px; right: 30px; width: 380px; height: 600px; 
+            max-width: calc(100vw - 40px); max-height: calc(100vh - 140px);
+            display: flex; flex-direction: column; z-index: 1001; 
+            transform: translateY(30px) scale(0.9); opacity: 0; pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 28px;
+            overflow: hidden;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+        }
+        #chatWindow.active { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
+
+        .chat-header { 
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); 
+            padding: 20px 24px; 
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .chat-body { 
+            flex: 1; overflow-y: auto; padding: 20px; 
+            background: radial-gradient(circle at top right, #0f172a, #020617);
+            display: flex; flex-direction: column; gap: 16px;
+            scrollbar-width: thin; scrollbar-color: var(--chat-secondary) transparent;
+        }
+
+        .chat-footer { 
+            padding: 16px 20px; 
+            background: #0f172a; 
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .msg { 
+            max-width: 85%; padding: 14px 18px; font-size: 14px; line-height: 1.5; 
+            position: relative; animation: slideIn 0.3s ease-out; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .msg-bot { 
+            align-self: flex-start; 
+            background: #1e293b; 
+            color: #f8fafc; 
+            border-radius: 20px 20px 20px 4px; 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+        }
+
+        .msg-user { 
+            align-self: flex-end; 
+            background: linear-gradient(135deg, var(--chat-secondary) 0%, var(--chat-primary) 100%); 
+            color: white; 
+            border-radius: 20px 20px 4px 20px; 
+        }
+
+        .status-dot { 
+            width: 10px; height: 10px; background: #22c55e; border-radius: 50%; 
+            display: inline-block; box-shadow: 0 0 12px #22c55e; animation: pulseDot 2s infinite; 
+        }
+        @keyframes pulseDot { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
+
+        .typing-indicator { display: none; align-items: center; gap: 5px; padding: 14px 18px; background: #1e293b; border-radius: 20px 20px 20px 4px; align-self: flex-start; border: 1px solid rgba(255,255,255,0.05); }
+        .typing-indicator.active { display: flex; }
+        .typing-indicator span { width: 6px; height: 6px; background: var(--chat-secondary); border-radius: 50%; animation: bounceDot 1.4s infinite ease-in-out both; }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounceDot { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -144,6 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
     <div class="grid-background"></div>
     <div class="glow" id="mouseGlow"></div>
 
+    <!-- Navegação -->
     <nav class="sticky top-0 z-50 p-6 glass-card border-none rounded-none border-b border-cyan-500/10 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center w-full">
             <div class="flex items-center gap-2 font-bold text-2xl cursor-pointer" onclick="navigate('home')">
@@ -161,6 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </nav>
 
+    <!-- PÁGINA: LOGIN / CADASTRO -->
     <main id="page-login" class="page max-w-5xl mx-auto px-6 pt-16 pb-20">
         <div class="flex flex-col md:flex-row rounded-[2rem] overflow-hidden shadow-2xl min-h-[600px] border border-white/10">
             <div class="hidden md:flex md:w-1/2 relative bg-slate-900 flex-col justify-center p-12 overflow-hidden">
@@ -214,6 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </main>
 
+    <!-- PÁGINA: HOME -->
     <main id="page-home" class="page active max-w-7xl mx-auto px-6 pt-20 pb-20 text-center">
         <div class="mb-8 inline-block px-4 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 text-sm font-medium">Líderes em Indústria 4.0</div>
         <h1 class="text-6xl md:text-8xl font-bold mb-8 text-white leading-tight">Engenharia de <br> <span class="text-cyan-400">Próxima Geração.</span></h1>
@@ -224,6 +287,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </main>
 
+    <!-- PÁGINA: CATÁLOGO -->
     <main id="page-catalogo" class="page max-w-7xl mx-auto px-6 pt-16 pb-20">
         <div class="flex flex-col md:flex-row gap-8">
             <div class="w-full md:w-1/4">
@@ -244,12 +308,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </main>
 
+    <!-- PÁGINA: PROJETOS -->
     <main id="page-projetos" class="page max-w-7xl mx-auto px-6 pt-20 pb-20">
         <h2 class="text-4xl font-bold mb-4 text-white">Projetos <span class="text-cyan-400">Realizados</span></h2>
         <p class="text-slate-400 mb-12">Conheça algumas das transformações que implementámos em parceiros industriais. Clique num projeto para ver detalhes.</p>
         <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     </main>
 
+    <!-- PÁGINA: SOBRE NÓS -->
     <main id="page-sobre" class="page max-w-7xl mx-auto px-6 pt-16 pb-20">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             <div>
@@ -266,6 +332,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </main>
 
+    <!-- PÁGINA: ADMINISTRAÇÃO -->
     <main id="page-admin" class="page max-w-7xl mx-auto px-6 pt-16 pb-20">
         <h2 class="text-4xl font-bold mb-4 text-white">Painel do <span class="text-amber-400">Administrador</span></h2>
         <p class="text-slate-400 mb-12">Área restrita para gestão. <b>Nota de Segurança:</b> A Chave de API está segura no ambiente do Render e removida deste painel.</p>
@@ -332,30 +399,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             
             <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative">
                 <button onclick="closeAdminCatalogModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors text-2xl font-bold z-20">✕</button>
-                
                 <span class="text-amber-400 text-xs font-bold uppercase tracking-widest mb-2 border border-amber-500/30 bg-amber-500/10 w-fit px-3 py-1 rounded-full">Gestão de Catálogo</span>
                 <h3 class="text-3xl font-bold text-white mb-6 leading-tight" id="catalogModalTitle">Adicionar Item</h3>
-                
                 <input type="hidden" id="editCatalogId" value="">
-                
                 <div class="space-y-5 mb-8">
-                    <div>
-                        <label class="block text-xs font-bold text-amber-400 uppercase mb-2">Tipo de Item</label>
-                        <select id="itemType" class="form-input bg-slate-950 focus:border-amber-400">
-                            <option value="produto">📦 Produto (Equipamento)</option>
-                            <option value="servico">🔧 Serviço Técnico</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-amber-400 uppercase mb-2">Título do Item</label>
-                        <input type="text" id="itemTitle" class="form-input focus:border-amber-400" placeholder="Ex: CLP Siemens S7-1200">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-amber-400 uppercase mb-2">Descrição Detalhada</label>
-                        <textarea id="itemDesc" class="form-input h-32 focus:border-amber-400 custom-scrollbar" placeholder="Insira as especificações..."></textarea>
-                    </div>
+                    <div><label class="block text-xs font-bold text-amber-400 uppercase mb-2">Tipo de Item</label><select id="itemType" class="form-input bg-slate-950 focus:border-amber-400"><option value="produto">📦 Produto (Equipamento)</option><option value="servico">🔧 Serviço Técnico</option></select></div>
+                    <div><label class="block text-xs font-bold text-amber-400 uppercase mb-2">Título do Item</label><input type="text" id="itemTitle" class="form-input focus:border-amber-400" placeholder="Ex: CLP Siemens S7-1200"></div>
+                    <div><label class="block text-xs font-bold text-amber-400 uppercase mb-2">Descrição Detalhada</label><textarea id="itemDesc" class="form-input h-32 focus:border-amber-400 custom-scrollbar" placeholder="Insira as especificações..."></textarea></div>
                 </div>
-                
                 <div class="flex gap-3 mt-auto border-t border-white/5 pt-6">
                     <button onclick="closeAdminCatalogModal()" class="flex-1 bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-700 transition-colors border border-slate-700">Cancelar</button>
                     <button onclick="saveCatalogItem()" class="flex-1 bg-amber-500 text-slate-900 font-bold py-3.5 rounded-xl hover:bg-amber-400 transition-colors shadow-lg shadow-amber-500/20">Salvar Alterações</button>
@@ -381,45 +432,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             
             <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative">
                 <button onclick="closeAdminProjectModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors text-2xl font-bold z-20">✕</button>
-                
                 <span class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2 border border-blue-500/30 bg-blue-500/10 w-fit px-3 py-1 rounded-full">Gestão de Projetos</span>
                 <h3 class="text-3xl font-bold text-white mb-6 leading-tight" id="projectModalTitle">Adicionar Projeto</h3>
-                
                 <input type="hidden" id="editProjectId" value="">
-                
                 <div class="space-y-4 mb-6 overflow-y-auto pr-2 custom-scrollbar" style="max-height: 40vh;">
-                    <div>
-                        <label class="block text-xs font-bold text-blue-400 uppercase mb-1.5">Setor / Categoria</label>
-                        <input type="text" id="projCat" class="form-input focus:border-blue-400" placeholder="Ex: Farmacêutica">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-blue-400 uppercase mb-1.5">Título do Projeto</label>
-                        <input type="text" id="projTitle" class="form-input focus:border-blue-400" placeholder="Ex: Automação de Linha 1">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-blue-400 uppercase mb-1.5">Descrição Completa</label>
-                        <textarea id="projDesc" class="form-input h-24 focus:border-blue-400 custom-scrollbar" placeholder="Detalhes da implementação..."></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-green-400 uppercase mb-1.5">Resultados Obtidos</label>
-                        <textarea id="projResults" class="form-input h-20 focus:border-green-400 custom-scrollbar" placeholder="Ex: Aumento de 30% na produção..."></textarea>
-                    </div>
+                    <div><label class="block text-xs font-bold text-blue-400 uppercase mb-1.5">Setor / Categoria</label><input type="text" id="projCat" class="form-input focus:border-blue-400" placeholder="Ex: Farmacêutica"></div>
+                    <div><label class="block text-xs font-bold text-blue-400 uppercase mb-1.5">Título do Projeto</label><input type="text" id="projTitle" class="form-input focus:border-blue-400" placeholder="Ex: Automação de Linha 1"></div>
+                    <div><label class="block text-xs font-bold text-blue-400 uppercase mb-1.5">Descrição Completa</label><textarea id="projDesc" class="form-input h-24 focus:border-blue-400 custom-scrollbar" placeholder="Detalhes da implementação..."></textarea></div>
+                    <div><label class="block text-xs font-bold text-green-400 uppercase mb-1.5">Resultados Obtidos</label><textarea id="projResults" class="form-input h-20 focus:border-green-400 custom-scrollbar" placeholder="Ex: Aumento de 30% na produção..."></textarea></div>
                 </div>
-                
                 <div class="flex gap-3 mt-auto pt-4 border-t border-white/5">
                     <button onclick="closeAdminProjectModal()" class="flex-1 bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-700 transition-colors border border-slate-700">Cancelar</button>
                     <button onclick="saveProjectItem()" class="flex-1 bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">Salvar Projeto</button>
                 </div>
             </div>
         </div>
-    </div>
-
-
-    <div class="chat-trigger" id="openChat" onclick="handleChatRequest()"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg></div>
-    <div id="chatWindow" class="glass-card">
-        <div class="chat-header flex justify-between items-center"><div class="flex items-center gap-3"><div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div><span class="text-white font-bold" id="chatBotName">Assistente AutoBot</span></div><button id="closeChat" class="text-slate-400 hover:text-white transition-colors text-xl font-bold">✕</button></div>
-        <div class="chat-body" id="chatContainer"><div class="msg msg-bot" id="welcomeMsg">Olá! Como posso ajudar?</div><div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div></div>
-        <div class="chat-footer flex gap-2"><input type="text" id="userInput" class="w-full bg-slate-950 border border-slate-800 rounded-full py-3 px-5 text-white text-sm outline-none focus:border-cyan-500 transition-all" placeholder="Escreva aqui..."><button id="sendMessage" class="bg-cyan-400 hover:bg-cyan-300 w-12 h-12 flex flex-shrink-0 items-center justify-center rounded-full text-slate-900 transition-all transform hover:scale-110">➤</button></div>
     </div>
 
     <!-- Modal Visualização de Projeto (Público) -->
@@ -430,8 +457,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- NOVA INTERFACE DO CHAT (Estilo Print)      -->
+    <!-- ========================================== -->
+    <div class="chat-trigger" id="openChat" onclick="handleChatRequest()">
+        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+    </div>
+
+    <div id="chatWindow">
+        <div class="chat-header">
+            <div class="flex items-center gap-3">
+                <div class="status-dot"></div>
+                <div>
+                    <h4 class="text-white font-bold text-sm tracking-tight leading-none mb-1" id="chatBotName">AutoBot AI</h4>
+                    <p class="text-[10px] text-cyan-400 uppercase font-bold leading-none">Assistente Online</p>
+                </div>
+            </div>
+            <button id="closeChat" class="text-slate-400 hover:text-white transition-colors text-lg font-bold p-1">✕</button>
+        </div>
+        
+        <div class="chat-body" id="chatContainer">
+            <div class="msg msg-bot" id="welcomeMsg">Olá! Sou o assistente inteligente da AutoBot. Em que posso ajudar na sua automação hoje?</div>
+            <div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>
+        </div>
+
+        <div class="chat-footer">
+            <input type="text" id="userInput" class="flex-1 bg-slate-900/80 border border-white/10 rounded-full py-3 px-5 text-white text-sm outline-none focus:border-purple-500/50 transition-all placeholder:text-slate-500" placeholder="Escreva a sua dúvida aqui...">
+            <button id="sendMessage" class="bg-gradient-to-br from-cyan-400 to-purple-600 hover:from-cyan-300 hover:to-purple-500 w-11 h-11 flex flex-shrink-0 items-center justify-center rounded-full text-white transition-all transform hover:scale-105 shadow-lg shadow-purple-500/30">
+                <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+            </button>
+        </div>
+    </div>
+
     <script>
-        // Efeitos Visuais
+        // Efeitos Visuais Background
         const glow = document.getElementById('mouseGlow');
         document.addEventListener('mousemove', (e) => { glow.style.transform = `translate(${e.clientX - 300}px, ${e.clientY - 300}px)`; });
 
@@ -575,7 +634,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                             <span class="inline-flex w-fit px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider mb-3 ${badgeColor}">${badgeIcon}</span>
                             <h3 class="text-xl font-bold text-white mb-2">${item.title}</h3>
                             <p class="text-slate-400 text-sm mb-6 flex-1 line-clamp-3">${item.desc}</p>
-                            <button onclick="handleChatRequest('Quero cotação para: ${item.title}')" class="w-full py-2 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-slate-900 rounded-lg">Cotação</button>
+                            <button onclick="handleChatRequest('Quero cotação para: ${item.title}')" class="w-full py-2 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-slate-900 rounded-lg transition-colors">Cotação</button>
                         </div>
                     </div>`;
             });
@@ -602,13 +661,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             }
             
             try { localStorage.setItem('autobot_catalog', JSON.stringify(catalogItems)); } 
-            catch(e) { alert("Imagem muito pesada para guardar!"); if(!id) catalogItems.pop(); return; }
+            catch(e) { alert("Imagem muito pesada para guardar localmente!"); if(!id) catalogItems.pop(); return; }
             
             closeAdminCatalogModal(); renderCatalog('all'); renderAdminLists();
         }
 
         function deleteCatalog(id) {
-            if(!confirm("Excluir item?")) return;
+            if(!confirm("Excluir item do catálogo?")) return;
             catalogItems = catalogItems.filter(i => i.id != id);
             localStorage.setItem('autobot_catalog', JSON.stringify(catalogItems));
             renderCatalog('all'); renderAdminLists();
@@ -647,7 +706,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             }
             
             try { localStorage.setItem('autobot_projects', JSON.stringify(projectItems)); } 
-            catch(e) { alert("Imagem muito pesada!"); if(!id) projectItems.pop(); return; }
+            catch(e) { alert("Imagem muito pesada para guardar localmente!"); if(!id) projectItems.pop(); return; }
             
             closeAdminProjectModal(); renderProjects(); renderAdminLists();
         }
@@ -740,6 +799,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             loginBtn.classList.replace("border-red-500", "btn-primary");
             loginBtn.onclick = () => navigate('login');
             document.getElementById('nav-admin').classList.add('hidden');
+            document.getElementById('chatWindow').classList.remove('active');
             navigate('home');
         }
 
@@ -806,7 +866,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 appendMsg('bot', aiRes.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'));
             } catch (e) {
                 document.getElementById('typingIndicator').classList.remove('active');
-                appendMsg('bot', `❌ Erro de ligação ao servidor: ${e.message}. Nota: O chat necessita do Backend PHP alojado no Render para funcionar com segurança.`);
+                appendMsg('bot', `❌ Erro de ligação ao servidor. Verifique a consola ou se o código PHP está ativo.`);
             }
         }
         function appendMsg(role, text) { const c = document.getElementById('chatContainer'); const d = document.createElement('div'); d.className = `msg msg-${role}`; d.innerHTML = text; c.insertBefore(d, document.getElementById('typingIndicator')); c.scrollTop = c.scrollHeight; }
