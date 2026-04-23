@@ -41,24 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
     exit;
 }
 ?>
-<!-- Chat Widget - Frontend -->
-<div id="wcLauncher" class="wc-launcher" title="Assistente Virtual">🦝</div>
-<div id="wcPanel" class="wc-panel" style="display:none;">
-  <div id="wcHeader" class="wc-header">
-    <span class="wc-logo">🦝</span>
-    <span>Assistente Virtual</span>
-  </div>
-  <div id="wcMessages" class="wc-messages"></div>
-  <div id="wcInputWrap" class="wc-input-wrap">
-    <input id="wcInput" type="text" placeholder="Digite sua mensagem..." />
-    <button id="wcSend" type="button">Enviar</button>
-  </div>
-  <div id="wcQuick" class="wc-quick">
-    <button class="wc-quick-btn" data-q="Rastrear Pedido">Rastrear Pedido</button>
-    <button class="wc-quick-btn" data-q="Falar com Suporte">Falar com Suporte</button>
-    <button class="wc-quick-btn" data-q="Dúvidas Gerais">Dúvidas Gerais</button>
-  </div>
-</div>
+<!-- Chat Widget - Frontend moved to body -->
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
@@ -220,13 +203,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 </head>
 <body>
 
+<!-- Chat Widget - Frontend -->
+<div id="wcLauncher" class="wc-launcher" title="CHATBOT GUAXI">🦝</div>
+<div id="wcPanel" class="wc-panel" style="display:none;">
+  <div id="wcHeader" class="wc-header">
+    <span class="wc-logo">🦝</span>
+    <span>CHATBOT GUAXI</span>
+  </div>
+  <div id="wcMessages" class="wc-messages"></div>
+  <div id="wcInputWrap" class="wc-input-wrap">
+    <input id="wcInput" type="text" placeholder="Digite sua mensagem..." />
+    <button id="wcSend" type="button">Enviar</button>
+  </div>
+  <div id="wcQuick" class="wc-quick">
+    <button class="wc-quick-btn" data-q="Rastrear Pedido">Rastrear Pedido</button>
+    <button class="wc-quick-btn" data-q="Falar com Suporte">Falar com Suporte</button>
+    <button class="wc-quick-btn" data-q="Dúvidas Gerais">Dúvidas Gerais</button>
+  </div>
+</div>
+
     <div class="grid-background"></div>
     <div class="glow" id="mouseGlow"></div>
+
+    <script src="chat-widget.js"></script>
 
     <nav class="sticky top-0 z-50 p-6 glass-card border-none rounded-none border-b border-cyan-500/10 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center w-full">
             <div class="flex items-center gap-2 font-bold text-2xl cursor-pointer" onclick="navigate('home')">
-                <span class="text-cyan-400" id="brandDisplay1">AUTO</span><span id="brandDisplay2">BOT</span>
+                <span class="text-cyan-400" id="brandDisplay1">CHATBOT</span><span id="brandDisplay2"> GUAXI</span>
             </div>
             <div class="hidden md:flex gap-8 text-sm items-center">
                 <a onclick="navigate('home')" class="nav-link active-nav" id="nav-home">Início</a>
@@ -246,7 +250,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&w=800')] bg-cover bg-center opacity-40"></div>
                 <div class="absolute inset-0 bg-gradient-to-r from-[#020617] to-transparent"></div>
                 <div class="relative z-10">
-                    <h2 class="text-4xl font-bold text-white mb-4">Junte-se à <span class="text-yellow-400">AutoBot IA</span> ⚡</h2>
+                <h2 class="text-4xl font-bold text-white mb-4">Junte-se ao <span class="text-yellow-400">CHATBOT GUAXI IA</span> ⚡</h2>
                     <p class="text-slate-300 text-lg">Crie a sua conta e inicie a sua jornada na automação industrial inteligente!</p>
                 </div>
             </div>
