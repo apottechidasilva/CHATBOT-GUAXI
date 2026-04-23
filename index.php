@@ -41,6 +41,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
     exit;
 }
 ?>
+<!-- Chat Widget - Frontend -->
+<div id="wcLauncher" class="wc-launcher" title="Assistente Virtual">🦝</div>
+<div id="wcPanel" class="wc-panel" style="display:none;">
+  <div id="wcHeader" class="wc-header">
+    <span class="wc-logo">🦝</span>
+    <span>Assistente Virtual</span>
+  </div>
+  <div id="wcMessages" class="wc-messages"></div>
+  <div id="wcInputWrap" class="wc-input-wrap">
+    <input id="wcInput" type="text" placeholder="Digite sua mensagem..." />
+    <button id="wcSend" type="button">Enviar</button>
+  </div>
+  <div id="wcQuick" class="wc-quick">
+    <button class="wc-quick-btn" data-q="Rastrear Pedido">Rastrear Pedido</button>
+    <button class="wc-quick-btn" data-q="Falar com Suporte">Falar com Suporte</button>
+    <button class="wc-quick-btn" data-q="Dúvidas Gerais">Dúvidas Gerais</button>
+  </div>
+</div>
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
@@ -48,7 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoBot - Soluções em Automação Industrial</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="chat-widget.css">
     <style>
         :root {
             --primary: #00f2ff;
