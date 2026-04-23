@@ -41,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
     exit;
 }
 ?>
-<!-- Chat Widget - Frontend moved to body -->
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
@@ -49,8 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoBot - Soluções em Automação Industrial</title>
     <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="chat-widget.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #00f2ff;
@@ -120,12 +118,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         /* NOVO DESIGN DO CHAT (Inspirado no Print)                  */
         /* ========================================================= */
         .chat-trigger {
-            position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; 
+            position: fixed; bottom: 30px; right: 30px; width: 70px; height: 70px; 
             background: linear-gradient(135deg, var(--chat-primary), var(--chat-secondary));
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
             cursor: pointer; box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5);
             z-index: 1000; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.1); padding: 4px;
         }
         .chat-trigger:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 15px 35px rgba(139, 92, 246, 0.7); }
 
@@ -167,16 +165,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 
         .msg { 
             max-width: 85%; padding: 14px 18px; font-size: 14px; line-height: 1.5; 
-            position: relative; animation: slideIn 0.3s ease-out; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .msg-bot { 
-            align-self: flex-start; 
             background: #1e293b; 
             color: #f8fafc; 
-            border-radius: 20px 20px 20px 4px; 
+            border-radius: 16px 16px 16px 4px; 
             border: 1px solid rgba(255, 255, 255, 0.05); 
         }
 
@@ -184,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             align-self: flex-end; 
             background: linear-gradient(135deg, var(--chat-secondary) 0%, var(--chat-primary) 100%); 
             color: white; 
-            border-radius: 20px 20px 4px 20px; 
+            border-radius: 16px 16px 4px 16px; 
         }
 
         .status-dot { 
@@ -193,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         }
         @keyframes pulseDot { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
 
-        .typing-indicator { display: none; align-items: center; gap: 5px; padding: 14px 18px; background: #1e293b; border-radius: 20px 20px 20px 4px; align-self: flex-start; border: 1px solid rgba(255,255,255,0.05); }
+        .typing-indicator { display: none; align-items: center; gap: 5px; padding: 14px 18px; background: #1e293b; border-radius: 16px 16px 16px 4px; border: 1px solid rgba(255,255,255,0.05); }
         .typing-indicator.active { display: flex; }
         .typing-indicator span { width: 6px; height: 6px; background: var(--chat-secondary); border-radius: 50%; animation: bounceDot 1.4s infinite ease-in-out both; }
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
@@ -203,17 +198,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 </head>
 <body>
 
-<!-- Widget duplicado removido; manter apenas o bloco inferior (rodapé) -->
-
     <div class="grid-background"></div>
     <div class="glow" id="mouseGlow"></div>
 
-    <script src="chat-widget.js"></script>
-
     <nav class="sticky top-0 z-50 p-6 glass-card border-none rounded-none border-b border-cyan-500/10 shadow-lg">
         <div class="max-w-7xl mx-auto flex justify-between items-center w-full">
-            <div class="flex items-center gap-2 font-bold text-2xl cursor-pointer" onclick="navigate('home')">
-                <span class="text-cyan-400" id="brandDisplay1">CHATBOT</span><span id="brandDisplay2"> GUAXI</span>
+            <div class="flex items-center gap-3 font-bold text-2xl cursor-pointer" onclick="navigate('home')">
+                <!-- LOGO GUAXINIM NAVBAR -->
+                <div class="w-10 h-10 rounded-full border-2 border-cyan-400 overflow-hidden bg-slate-900 flex items-center justify-center shadow-[0_0_10px_rgba(0,242,255,0.3)]">
+                    <svg viewBox="0 0 150 150" class="w-[110%] h-[110%] mt-2" xmlns="http://www.w3.org/2000/svg"><circle cx="75" cy="75" r="70" fill="#0056D2" /><path d="M30,140 L120,140 L110,85 Q75,80 40,85 Z" fill="#0056D2" stroke="#00C1D4" stroke-width="2"/><path d="M60,140 L90,140 L85,85 L65,85 Z" fill="#8C9490" /><circle cx="75" cy="65" r="42" fill="#8C9490" /><path d="M35,60 Q35,30 75,25 Q115,30 115,60" fill="#8C9490" /><path d="M35,55 Q75,85 115,55 Q115,85 75,95 Q35,85 35,55" fill="#373A40" /><ellipse cx="58" cy="65" rx="9" ry="11" fill="white" /><ellipse cx="92" cy="65" rx="9" ry="11" fill="white" /><circle cx="58" cy="66" r="6" fill="#A67C52" /><circle cx="92" cy="66" r="6" fill="#A67C52" /><circle cx="58" cy="66" r="3.5" fill="#111" /><circle cx="92" cy="66" r="3.5" fill="#111" /><circle cx="56" cy="63" r="1.5" fill="white" /><circle cx="90" cy="63" r="1.5" fill="white" /><path d="M65,80 Q75,95 85,80 Z" fill="#E2E8F0" /><circle cx="75" cy="83" r="5" fill="#111" /><path d="M70,88 Q75,93 80,88" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" /><path d="M45,30 L25,5 L65,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /><path d="M105,30 L125,5 L85,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /></svg>
+                </div>
+                <div><span class="text-cyan-400" id="brandDisplay1">AUTO</span><span id="brandDisplay2">BOT</span></div>
             </div>
             <div class="hidden md:flex gap-8 text-sm items-center">
                 <a onclick="navigate('home')" class="nav-link active-nav" id="nav-home">Início</a>
@@ -233,7 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&w=800')] bg-cover bg-center opacity-40"></div>
                 <div class="absolute inset-0 bg-gradient-to-r from-[#020617] to-transparent"></div>
                 <div class="relative z-10">
-                <h2 class="text-4xl font-bold text-white mb-4">Junte-se ao <span class="text-yellow-400">CHATBOT GUAXI IA</span> ⚡</h2>
+                    <h2 class="text-4xl font-bold text-white mb-4">Junte-se à <span class="text-yellow-400">AutoBot IA</span> ⚡</h2>
                     <p class="text-slate-300 text-lg">Crie a sua conta e inicie a sua jornada na automação industrial inteligente!</p>
                 </div>
             </div>
@@ -460,15 +455,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
     <!-- NOVA INTERFACE DO CHAT (Estilo Print)      -->
     <!-- ========================================== -->
     <div class="chat-trigger" id="openChat" onclick="handleChatRequest()">
-        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+        <div class="w-full h-full rounded-full bg-[#0056D2] flex items-center justify-center overflow-hidden border-2 border-white/20 relative">
+            <svg viewBox="0 0 150 150" class="w-[120%] h-[120%] mt-2" xmlns="http://www.w3.org/2000/svg"><circle cx="75" cy="75" r="70" fill="#0056D2" /><path d="M30,140 L120,140 L110,85 Q75,80 40,85 Z" fill="#0056D2" stroke="#00C1D4" stroke-width="2"/><path d="M60,140 L90,140 L85,85 L65,85 Z" fill="#8C9490" /><circle cx="75" cy="65" r="42" fill="#8C9490" /><path d="M35,60 Q35,30 75,25 Q115,30 115,60" fill="#8C9490" /><path d="M35,55 Q75,85 115,55 Q115,85 75,95 Q35,85 35,55" fill="#373A40" /><ellipse cx="58" cy="65" rx="9" ry="11" fill="white" /><ellipse cx="92" cy="65" rx="9" ry="11" fill="white" /><circle cx="58" cy="66" r="6" fill="#A67C52" /><circle cx="92" cy="66" r="6" fill="#A67C52" /><circle cx="58" cy="66" r="3.5" fill="#111" /><circle cx="92" cy="66" r="3.5" fill="#111" /><circle cx="56" cy="63" r="1.5" fill="white" /><circle cx="90" cy="63" r="1.5" fill="white" /><path d="M65,80 Q75,95 85,80 Z" fill="#E2E8F0" /><circle cx="75" cy="83" r="5" fill="#111" /><path d="M70,88 Q75,93 80,88" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" /><path d="M45,30 L25,5 L65,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /><path d="M105,30 L125,5 L85,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /></svg>
+        </div>
+        <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-[#020617] rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
     </div>
 
     <div id="chatWindow">
         <div class="chat-header">
             <div class="flex items-center gap-3">
-                <div class="status-dot"></div>
+                <div class="w-10 h-10 rounded-full border border-purple-500/30 bg-slate-800 flex items-center justify-center overflow-hidden shadow-[0_0_10px_rgba(139,92,246,0.3)]">
+                    <svg viewBox="0 0 150 150" class="w-[110%] h-[110%] mt-2" xmlns="http://www.w3.org/2000/svg"><circle cx="75" cy="75" r="70" fill="#0056D2" /><path d="M30,140 L120,140 L110,85 Q75,80 40,85 Z" fill="#0056D2" stroke="#00C1D4" stroke-width="2"/><path d="M60,140 L90,140 L85,85 L65,85 Z" fill="#8C9490" /><circle cx="75" cy="65" r="42" fill="#8C9490" /><path d="M35,60 Q35,30 75,25 Q115,30 115,60" fill="#8C9490" /><path d="M35,55 Q75,85 115,55 Q115,85 75,95 Q35,85 35,55" fill="#373A40" /><ellipse cx="58" cy="65" rx="9" ry="11" fill="white" /><ellipse cx="92" cy="65" rx="9" ry="11" fill="white" /><circle cx="58" cy="66" r="6" fill="#A67C52" /><circle cx="92" cy="66" r="6" fill="#A67C52" /><circle cx="58" cy="66" r="3.5" fill="#111" /><circle cx="92" cy="66" r="3.5" fill="#111" /><circle cx="56" cy="63" r="1.5" fill="white" /><circle cx="90" cy="63" r="1.5" fill="white" /><path d="M65,80 Q75,95 85,80 Z" fill="#E2E8F0" /><circle cx="75" cy="83" r="5" fill="#111" /><path d="M70,88 Q75,93 80,88" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" /><path d="M45,30 L25,5 L65,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /><path d="M105,30 L125,5 L85,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /></svg>
+                </div>
                 <div>
-                    <h4 class="text-white font-bold text-sm tracking-tight leading-none mb-1" id="chatBotName">AutoBot AI</h4>
+                    <h4 class="text-white font-bold text-sm tracking-tight leading-none mb-1 flex items-center gap-2" id="chatBotName">AutoBot AI <div class="status-dot relative top-auto shadow-none"></div></h4>
                     <p class="text-[10px] text-cyan-400 uppercase font-bold leading-none">Assistente Online</p>
                 </div>
             </div>
@@ -476,8 +476,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
         
         <div class="chat-body" id="chatContainer">
-            <div class="msg msg-bot" id="welcomeMsg">Olá! Sou o assistente inteligente da AutoBot. Em que posso ajudar na sua automação hoje?</div>
-            <div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>
+            <div class="flex items-end gap-2 w-full justify-start mb-2 animate-[slideIn_0.3s_ease-out]">
+                <div class="w-8 h-8 rounded-full border border-purple-500/30 flex-shrink-0 bg-slate-800 flex items-center justify-center overflow-hidden shadow-[0_0_10px_rgba(139,92,246,0.3)]">
+                    <svg viewBox="0 0 150 150" class="w-[110%] h-[110%] mt-2" xmlns="http://www.w3.org/2000/svg"><circle cx="75" cy="75" r="70" fill="#0056D2" /><path d="M30,140 L120,140 L110,85 Q75,80 40,85 Z" fill="#0056D2" stroke="#00C1D4" stroke-width="2"/><path d="M60,140 L90,140 L85,85 L65,85 Z" fill="#8C9490" /><circle cx="75" cy="65" r="42" fill="#8C9490" /><path d="M35,60 Q35,30 75,25 Q115,30 115,60" fill="#8C9490" /><path d="M35,55 Q75,85 115,55 Q115,85 75,95 Q35,85 35,55" fill="#373A40" /><ellipse cx="58" cy="65" rx="9" ry="11" fill="white" /><ellipse cx="92" cy="65" rx="9" ry="11" fill="white" /><circle cx="58" cy="66" r="6" fill="#A67C52" /><circle cx="92" cy="66" r="6" fill="#A67C52" /><circle cx="58" cy="66" r="3.5" fill="#111" /><circle cx="92" cy="66" r="3.5" fill="#111" /><circle cx="56" cy="63" r="1.5" fill="white" /><circle cx="90" cy="63" r="1.5" fill="white" /><path d="M65,80 Q75,95 85,80 Z" fill="#E2E8F0" /><circle cx="75" cy="83" r="5" fill="#111" /><path d="M70,88 Q75,93 80,88" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" /><path d="M45,30 L25,5 L65,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /><path d="M105,30 L125,5 L85,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /></svg>
+                </div>
+                <div class="msg msg-bot" id="welcomeMsg">Olá! Sou o assistente inteligente da AutoBot. Em que posso ajudar na sua automação hoje?</div>
+            </div>
+            
+            <div class="flex items-end gap-2 w-full justify-start mb-2 hidden" id="typingIndicatorWrapper">
+                <div class="w-8 h-8 rounded-full border border-purple-500/30 flex-shrink-0 bg-slate-800 flex items-center justify-center overflow-hidden shadow-[0_0_10px_rgba(139,92,246,0.3)]">
+                    <svg viewBox="0 0 150 150" class="w-[110%] h-[110%] mt-2" xmlns="http://www.w3.org/2000/svg"><circle cx="75" cy="75" r="70" fill="#0056D2" /><path d="M30,140 L120,140 L110,85 Q75,80 40,85 Z" fill="#0056D2" stroke="#00C1D4" stroke-width="2"/><path d="M60,140 L90,140 L85,85 L65,85 Z" fill="#8C9490" /><circle cx="75" cy="65" r="42" fill="#8C9490" /><path d="M35,60 Q35,30 75,25 Q115,30 115,60" fill="#8C9490" /><path d="M35,55 Q75,85 115,55 Q115,85 75,95 Q35,85 35,55" fill="#373A40" /><ellipse cx="58" cy="65" rx="9" ry="11" fill="white" /><ellipse cx="92" cy="65" rx="9" ry="11" fill="white" /><circle cx="58" cy="66" r="6" fill="#A67C52" /><circle cx="92" cy="66" r="6" fill="#A67C52" /><circle cx="58" cy="66" r="3.5" fill="#111" /><circle cx="92" cy="66" r="3.5" fill="#111" /><circle cx="56" cy="63" r="1.5" fill="white" /><circle cx="90" cy="63" r="1.5" fill="white" /><path d="M65,80 Q75,95 85,80 Z" fill="#E2E8F0" /><circle cx="75" cy="83" r="5" fill="#111" /><path d="M70,88 Q75,93 80,88" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" /><path d="M45,30 L25,5 L65,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /><path d="M105,30 L125,5 L85,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /></svg>
+                </div>
+                <div class="typing-indicator active" id="typingIndicator"><span></span><span></span><span></span></div>
+            </div>
         </div>
 
         <div class="chat-footer">
@@ -823,7 +834,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         }
 
         function updateUI() {
-            document.getElementById('chatBotName').innerText = appConfig.name;
+            document.getElementById('chatBotName').innerText = appConfig.name + " AI";
             document.getElementById('brandDisplay1').innerText = appConfig.name.split(' ')[0].toUpperCase();
             document.getElementById('brandDisplay2').innerText = appConfig.name.split(' ')[1] ? appConfig.name.split(' ')[1].toUpperCase() : "BOT";
         }
@@ -831,7 +842,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         async function handleSend() {
             const input = document.getElementById('userInput'); const val = input.value.trim();
             if(!val) return;
-            appendMsg('user', val); input.value = ''; document.getElementById('typingIndicator').classList.add('active');
+            appendMsg('user', val); input.value = ''; document.getElementById('typingIndicatorWrapper').classList.remove('hidden');
             
             try {
                 const catalogContext = catalogItems.map(item => `- ${item.type}: ${item.title} (${item.desc})`).join('\n');
@@ -853,7 +864,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 if (!response.ok) throw new Error(`Erro na API: HTTP ${response.status}`);
 
                 const data = await response.json();
-                document.getElementById('typingIndicator').classList.remove('active');
+                document.getElementById('typingIndicatorWrapper').classList.add('hidden');
                 
                 if (data.error) throw new Error(data.error);
 
@@ -864,11 +875,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 
                 appendMsg('bot', aiRes.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'));
             } catch (e) {
-                document.getElementById('typingIndicator').classList.remove('active');
-                appendMsg('bot', `❌ Erro de ligação ao servidor. Verifique a consola ou se o código PHP está ativo.`);
+                document.getElementById('typingIndicatorWrapper').classList.add('hidden');
+                appendMsg('bot', `❌ Erro de ligação ao servidor: ${e.message}. Nota: O chat necessita do Backend PHP alojado no Render para funcionar com segurança.`);
             }
         }
-        function appendMsg(role, text) { const c = document.getElementById('chatContainer'); const d = document.createElement('div'); d.className = `msg msg-${role}`; d.innerHTML = text; c.insertBefore(d, document.getElementById('typingIndicator')); c.scrollTop = c.scrollHeight; }
+        
+        function appendMsg(role, text) { 
+            const c = document.getElementById('chatContainer'); 
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex items-end gap-2 w-full ${role === 'user' ? 'justify-end' : 'justify-start'} mb-2 animate-[slideIn_0.3s_ease-out]`;
+            
+            const mascotSVG = `<svg viewBox="0 0 150 150" class="w-[110%] h-[110%] mt-2" xmlns="http://www.w3.org/2000/svg"><circle cx="75" cy="75" r="70" fill="#0056D2" /><path d="M30,140 L120,140 L110,85 Q75,80 40,85 Z" fill="#0056D2" stroke="#00C1D4" stroke-width="2"/><path d="M60,140 L90,140 L85,85 L65,85 Z" fill="#8C9490" /><circle cx="75" cy="65" r="42" fill="#8C9490" /><path d="M35,60 Q35,30 75,25 Q115,30 115,60" fill="#8C9490" /><path d="M35,55 Q75,85 115,55 Q115,85 75,95 Q35,85 35,55" fill="#373A40" /><ellipse cx="58" cy="65" rx="9" ry="11" fill="white" /><ellipse cx="92" cy="65" rx="9" ry="11" fill="white" /><circle cx="58" cy="66" r="6" fill="#A67C52" /><circle cx="92" cy="66" r="6" fill="#A67C52" /><circle cx="58" cy="66" r="3.5" fill="#111" /><circle cx="92" cy="66" r="3.5" fill="#111" /><circle cx="56" cy="63" r="1.5" fill="white" /><circle cx="90" cy="63" r="1.5" fill="white" /><path d="M65,80 Q75,95 85,80 Z" fill="#E2E8F0" /><circle cx="75" cy="83" r="5" fill="#111" /><path d="M70,88 Q75,93 80,88" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round" /><path d="M45,30 L25,5 L65,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /><path d="M105,30 L125,5 L85,25 Z" fill="#373A40" stroke="#8C9490" stroke-width="2" stroke-linejoin="round" /></svg>`;
+
+            if (role === 'bot') {
+                wrapper.innerHTML = `
+                <div class="w-8 h-8 rounded-full border border-purple-500/30 flex-shrink-0 bg-slate-800 flex items-center justify-center overflow-hidden shadow-[0_0_10px_rgba(139,92,246,0.3)]">
+                    ${mascotSVG}
+                </div>
+                <div class="msg msg-bot">${text}</div>`;
+            } else {
+                wrapper.innerHTML = `<div class="msg msg-user">${text}</div>`;
+            }
+
+            c.insertBefore(wrapper, document.getElementById('typingIndicatorWrapper')); 
+            c.scrollTop = c.scrollHeight; 
+        }
+
         document.getElementById('closeChat').onclick = () => document.getElementById('chatWindow').classList.remove('active');
         document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter') handleSend(); };
 
