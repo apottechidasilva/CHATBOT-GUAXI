@@ -203,24 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 </head>
 <body>
 
-<!-- Chat Widget - Frontend -->
-<div id="wcLauncher" class="wc-launcher" title="CHATBOT GUAXI">🦝</div>
-<div id="wcPanel" class="wc-panel" style="display:none;">
-  <div id="wcHeader" class="wc-header">
-    <span class="wc-logo">🦝</span>
-    <span>CHATBOT GUAXI</span>
-  </div>
-  <div id="wcMessages" class="wc-messages"></div>
-  <div id="wcInputWrap" class="wc-input-wrap">
-    <input id="wcInput" type="text" placeholder="Digite sua mensagem..." />
-    <button id="wcSend" type="button">Enviar</button>
-  </div>
-  <div id="wcQuick" class="wc-quick">
-    <button class="wc-quick-btn" data-q="Rastrear Pedido">Rastrear Pedido</button>
-    <button class="wc-quick-btn" data-q="Falar com Suporte">Falar com Suporte</button>
-    <button class="wc-quick-btn" data-q="Dúvidas Gerais">Dúvidas Gerais</button>
-  </div>
-</div>
+<!-- Widget duplicado removido; manter apenas o bloco inferior (rodapé) -->
 
     <div class="grid-background"></div>
     <div class="glow" id="mouseGlow"></div>
