@@ -532,7 +532,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 
         <div class="chat-footer">
             <input type="text" id="userInput" class="flex-1 bg-slate-900/80 border border-white/10 rounded-full py-3 px-5 text-white text-sm outline-none focus:border-purple-500/50 transition-all placeholder:text-slate-500" placeholder="Escreva a sua dúvida aqui...">
-            <button id="sendMessage" class="bg-gradient-to-br from-cyan-400 to-purple-600 hover:from-cyan-300 hover:to-purple-500 w-11 h-11 flex flex-shrink-0 items-center justify-center rounded-full text-white transition-all transform hover:scale-105 shadow-lg shadow-purple-500/30">
+            <button id="sendMessage" onclick="handleSend()" class="bg-gradient-to-br from-cyan-400 to-purple-600 hover:from-cyan-300 hover:to-purple-500 w-11 h-11 flex flex-shrink-0 items-center justify-center rounded-full text-white transition-all transform hover:scale-105 shadow-lg shadow-purple-500/30">
                 <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
             </button>
         </div>
@@ -1133,6 +1133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 
         document.getElementById('closeChat').onclick = () => document.getElementById('chatWindow').classList.remove('active');
         document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter') handleSend(); };
+        document.getElementById('sendMessage').onclick = handleSend;
 
         // --- FUNCIONÁRIOS ---
         let currentEmployee = null;
