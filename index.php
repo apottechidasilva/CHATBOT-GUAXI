@@ -914,6 +914,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 // Salvar novo cliente
                 clients.push({ id: Date.now(), name, email, password });
                 localStorage.setItem('autobot_clients', JSON.stringify(clients));
+            } else if (currentAuthMode === 'login') {
+                // Verificar se é funcionário
+                const emp = employees.find(e => e.email === email);
+                if (emp) {
+                    if (emp.password === password) {
+                        currentEmployee = emp;
+                        navigate('employee-dashboard');
+                        renderEmployeeMessages();
+                        return;
+                    } else {
+                        return alert('Senha de funcionário incorreta!');
+                    }
+                }
             }
 
             if (email === 'admin@autobot.com' && currentAuthMode === 'login') {
@@ -921,24 +934,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 else { return alert('Senha de administrador incorreta!'); }
             } else { isAdmin = false; document.getElementById('nav-admin').classList.add('hidden'); }
 
-            const toast = document.getElementById('loginToast');
-            toast.innerText = currentAuthMode === 'register' ? "Conta criada com sucesso!" : "Acesso efetuado com sucesso!";
-            toast.classList.add('toast-enter');
-            
-            isLoggedIn = true;
-            const loginBtn = document.getElementById('nav-loginBtn');
-            loginBtn.innerText = "Sair";
-            loginBtn.classList.replace("btn-primary", "border-red-500");
-            loginBtn.onclick = logout;
+            // Para registro ou login de cliente
+            if (currentAuthMode === 'register' || (currentAuthMode === 'login' && !isAdmin)) {
+                const toast = document.getElementById('loginToast');
+                toast.innerText = currentAuthMode === 'register' ? "Conta criada com sucesso!" : "Acesso efetuado com sucesso!";
+                toast.classList.add('toast-enter');
+                
+                isLoggedIn = true;
+                const loginBtn = document.getElementById('nav-loginBtn');
+                loginBtn.innerText = "Sair";
+                loginBtn.classList.replace("btn-primary", "border-red-500");
+                loginBtn.onclick = logout;
 
-            setTimeout(() => {
-                toast.classList.remove('toast-enter');
-                if (isAdmin) navigate('admin');
-                else {
-                    navigate('catalogo'); document.getElementById('chatWindow').classList.add('active');
-                    if(pendingUserMessage) { document.getElementById('userInput').value = pendingUserMessage; handleSend(); pendingUserMessage = ""; }
-                }
-            }, 1500);
+                setTimeout(() => {
+                    toast.classList.remove('toast-enter');
+                    if (isAdmin) navigate('admin');
+                    else {
+                        navigate('catalogo'); document.getElementById('chatWindow').classList.add('active');
+                        if(pendingUserMessage) { document.getElementById('userInput').value = pendingUserMessage; handleSend(); pendingUserMessage = ""; }
+                    }
+                }, 1500);
+            }
         }
 
         function logout() {
