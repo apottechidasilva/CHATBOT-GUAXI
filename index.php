@@ -525,6 +525,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         let catalogItems = [];
         let projectItems = [];
 
+        const defaultCatalogItems = [
+            { id: 1, type: 'produto', title: 'CLP Siemens S7-1200', desc: 'Controlador Lógico Programável compacto para automação de máquinas e processos industriais. Ideal para aplicações de médio porte com alta confiabilidade.', image: 'https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&w=600' },
+            { id: 2, type: 'produto', title: 'Sensor de Proximidade Indutivo', desc: 'Sensor não-contato para detecção de metais em linhas de produção. Resistente a poeira e umidade, com alcance de até 15mm.', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600' },
+            { id: 3, type: 'produto', title: 'Atuador Pneumático', desc: 'Cilindro pneumático de dupla ação para controle preciso de movimentos em equipamentos industriais. Pressão máxima de 10 bar.', image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600' },
+            { id: 4, type: 'produto', title: 'Robô Colaborativo UR5', desc: 'Robô colaborativo de 6 eixos para tarefas de pick-and-place e montagem. Payload de 5kg, programável via interface intuitiva.', image: 'https://images.unsplash.com/photo-1565514020179-026b92b84bb6?auto=format&fit=crop&w=600' },
+            { id: 5, type: 'produto', title: 'Controlador de Motores VFD', desc: 'Inversor de frequência para controle variável de velocidade de motores trifásicos. Eficiência energética e proteção contra sobrecargas.', image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=600' },
+            { id: 6, type: 'produto', title: 'Sistema de Visão Industrial', desc: 'Câmera inteligente com processamento de imagem para inspeção de qualidade e orientação de peças. Resolução 5MP com iluminação integrada.', image: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=600' },
+            { id: 7, type: 'servico', title: 'Consultoria em Automação', desc: 'Análise completa de processos industriais e recomendação de soluções de automação personalizadas. Inclui estudo de viabilidade e ROI.', image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=600' },
+            { id: 8, type: 'servico', title: 'Manutenção Preventiva de Equipamentos', desc: 'Programa de manutenção preventiva para sistemas automatizados, reduzindo downtime e aumentando vida útil dos equipamentos.', image: 'https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?auto=format&fit=crop&w=600' },
+            { id: 9, type: 'servico', title: 'Integração de Sistemas SCADA', desc: 'Implementação e integração de sistemas de supervisão e controle de dados industriais. Compatível com protocolos Modbus e Profinet.', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600' },
+            { id: 10, type: 'servico', title: 'Treinamento em PLC Programming', desc: 'Cursos práticos de programação de controladores lógicos, incluindo linguagens Ladder, FBD e SCL. Certificação incluída.', image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600' },
+            { id: 11, type: 'servico', title: 'Otimização de Processos Industriais', desc: 'Análise e otimização de linhas de produção para maximizar eficiência e reduzir custos operacionais. Utiliza ferramentas Lean e Six Sigma.', image: 'https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?auto=format&fit=crop&w=600' },
+            { id: 12, type: 'servico', title: 'Suporte Técnico 24/7', desc: 'Suporte remoto e presencial 24 horas por dia para resolução de problemas em sistemas automatizados. Contrato SLA garantido.', image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=600' }
+        ];
+
         const defaultProjects = [
             { id: 1, cat: 'Setor Automóvel', title: 'Linha de Montagem Robotizada', image: 'https://images.unsplash.com/photo-1565514020179-026b92b84bb6?auto=format&fit=crop&w=1200', desc: 'Projeto chave-na-mão para a montagem de chassis automóveis. Integrou 12 células robóticas de alta precisão em rede Profinet.', results: 'Aumento de 35% na eficiência. Redução de falhas em 99%.' },
             { id: 2, cat: 'Energia', title: 'Otimização de Smart Grid', image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1200', desc: 'Modernização de centro de controlo de energia com Sistema SCADA avançado e algoritmos de previsão.', results: 'Poupança de 22% na rede. Resposta a falhas baixou para 3 minutos.' }
@@ -533,7 +548,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         window.onload = () => {
             const savedCat = localStorage.getItem('autobot_catalog');
             const savedProj = localStorage.getItem('autobot_projects');
-            catalogItems = savedCat ? JSON.parse(savedCat) : [];
+            catalogItems = savedCat ? JSON.parse(savedCat) : defaultCatalogItems;
             projectItems = savedProj ? JSON.parse(savedProj) : defaultProjects;
             
             const savedCfg = localStorage.getItem('autobot_pro_cfg');
