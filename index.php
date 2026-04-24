@@ -906,6 +906,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             const name = document.getElementById('authName').value;
 
             if (currentAuthMode === 'register') {
+                // Validar preenchimento obrigatório
+                if (!name || !email || !password) return alert("Preencha todos os campos obrigatórios!");
+                
                 // Verificar se email já existe
                 const existingEmployee = employees.find(e => e.email === email);
                 const existingClient = clients.find(c => c.email === email);
@@ -927,15 +930,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                         return alert('Senha de funcionário incorreta!');
                     }
                 }
+
+                // Verificar se é admin
+                if (email === 'admin@autobot.com') {
+                    if (password === 'admin123') { 
+                        isAdmin = true; 
+                        document.getElementById('nav-admin').classList.remove('hidden'); 
+                    } else { 
+                        return alert('Senha de administrador incorreta!'); 
+                    }
+                } else {
+                    // Login de cliente - verificar se existe
+                    const client = clients.find(c => c.email === email);
+                    if (!client) return alert("Email não cadastrado! Faça login pela aba CADASTRAR.");
+                    if (client.password !== password) return alert("Senha incorreta!");
+                    isAdmin = false;
+                    document.getElementById('nav-admin').classList.add('hidden');
+                }
             }
 
-            if (email === 'admin@autobot.com' && currentAuthMode === 'login') {
-                if (password === 'admin123') { isAdmin = true; document.getElementById('nav-admin').classList.remove('hidden'); }
-                else { return alert('Senha de administrador incorreta!'); }
-            } else { isAdmin = false; document.getElementById('nav-admin').classList.add('hidden'); }
-
-            // Para registro ou login de cliente
-            if (currentAuthMode === 'register' || (currentAuthMode === 'login' && !isAdmin)) {
+            // Para registro ou login bem-sucedido
+            if (currentAuthMode === 'register' || currentAuthMode === 'login') {
                 const toast = document.getElementById('loginToast');
                 toast.innerText = currentAuthMode === 'register' ? "Conta criada com sucesso!" : "Acesso efetuado com sucesso!";
                 toast.classList.add('toast-enter');
