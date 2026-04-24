@@ -266,11 +266,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                         <button type="submit" id="authSubmitBtn" class="w-full bg-white text-[#2563eb] font-bold py-3.5 rounded-lg hover:bg-slate-100 transition-all mt-4 shadow-lg">
                             Entrar
                         </button>
-                        <p class="text-center text-blue-200 text-xs mt-4 leading-relaxed">
-                            Para testar o painel admin, aceda usando:<br>
-                            Email: <strong class="text-white">admin@autobot.com</strong><br>
-                            Senha: <strong class="text-white">admin123</strong>
-                        </p>
                     </form>
                 </div>
             </div>
