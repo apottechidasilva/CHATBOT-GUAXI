@@ -217,6 +217,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 <a onclick="navigate('sobre')" class="nav-link" id="nav-sobre">Sobre Nós</a>
                 <a onclick="navigate('admin')" class="nav-link text-amber-400 hover:text-amber-300 hidden" id="nav-admin">Admin</a>
                 
+                <a onclick="navigate('employee-login')" class="nav-link" id="nav-employee">Funcionários</a>
+                
                 <button onclick="navigate('login')" class="btn-primary text-xs py-2 px-6 ml-4 shadow-lg shadow-cyan-500/20" id="nav-loginBtn">Fazer Login</button>
             </div>
         </div>
@@ -374,9 +376,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 <tbody id="adminProjectList" class="divide-y divide-slate-700/50"></tbody>
             </table></div>
         </div>
+
+        <!-- Tabela Funcionários -->
+        <div class="glass-card p-8 border-t-4 border-t-green-500">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+                <h3 class="text-2xl font-bold text-white">Gestão de Funcionários</h3>
+                <button onclick="openAdminEmployeeModal()" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded-xl transition-colors shadow-lg shadow-green-500/20">+ Novo Funcionário</button>
+            </div>
+            <div class="overflow-x-auto"><table class="w-full text-left text-sm text-slate-300">
+                <thead class="text-xs text-green-400 uppercase bg-slate-800/50"><tr><th class="px-4 py-3">Nome</th><th class="px-4 py-3">Cargo</th><th class="px-4 py-3">Email</th><th class="px-4 py-3 text-right">Ações</th></tr></thead>
+                <tbody id="adminEmployeeList" class="divide-y divide-slate-700/50"></tbody>
+            </table></div>
+        </div>
     </main>
 
-    <!-- NOVO MODAL: Edição de Catálogo -->
+    <main id="page-employee-login" class="page max-w-md mx-auto px-6 pt-16 pb-20">
+        <div class="glass-card p-8 rounded-[2rem] shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Área do Funcionário</h2>
+            <form onsubmit="employeeLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-cyan-400 mb-2">Email:</label>
+                    <input type="email" id="empEmail" class="form-input" required placeholder="seu@email.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-cyan-400 mb-2">Senha:</label>
+                    <input type="password" id="empPassword" class="form-input" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full btn-primary">Entrar</button>
+            </form>
+        </div>
+    </main>
+
+    <main id="page-employee-dashboard" class="page max-w-6xl mx-auto px-6 pt-16 pb-20">
+        <h2 class="text-2xl font-bold text-white mb-6">Mensagens Pendentes</h2>
+        <div id="employeeMessages" class="space-y-4"></div>
+        <button onclick="employeeLogout()" class="mt-6 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded">Sair</button>
+    </main>
     <div id="adminCatalogModal" class="modal-overlay" onclick="closeAdminCatalogModal(event)">
         <div class="glass-card modal-content w-full max-w-5xl mx-4 flex flex-col md:flex-row overflow-hidden bg-slate-900/95 border-amber-500/40" onclick="event.stopPropagation()">
             <div class="w-full md:w-1/2 h-64 md:h-auto relative bg-slate-800 flex items-center justify-center group border-r border-slate-700/50">
@@ -451,6 +486,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
     </div>
 
+    <!-- NOVO MODAL: Edição de Funcionários -->
+    <div id="adminEmployeeModal" class="modal-overlay" onclick="closeAdminEmployeeModal(event)">
+        <div class="glass-card modal-content w-full max-w-4xl mx-4 bg-slate-900/95 border-green-500/40 p-8" onclick="event.stopPropagation()">
+            <button onclick="closeAdminEmployeeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors text-2xl font-bold z-20">✕</button>
+            <span class="text-green-400 text-xs font-bold uppercase tracking-widest mb-2 border border-green-500/30 bg-green-500/10 w-fit px-3 py-1 rounded-full">Gestão de Funcionários</span>
+            <h3 class="text-3xl font-bold text-white mb-6 leading-tight" id="employeeModalTitle">Adicionar Funcionário</h3>
+            <input type="hidden" id="editEmployeeId" value="">
+            <div class="space-y-5 mb-8">
+                <div><label class="block text-xs font-bold text-green-400 uppercase mb-2">Nome Completo</label><input type="text" id="employeeName" class="form-input focus:border-green-400" placeholder="Ex: João Silva"></div>
+                <div><label class="block text-xs font-bold text-green-400 uppercase mb-2">Cargo</label><input type="text" id="employeeRole" class="form-input focus:border-green-400" placeholder="Ex: Engenheiro de Automação"></div>
+                <div><label class="block text-xs font-bold text-green-400 uppercase mb-2">Email</label><input type="email" id="employeeEmail" class="form-input focus:border-green-400" placeholder="funcionario@autobot.com"></div>
+                <div><label class="block text-xs font-bold text-green-400 uppercase mb-2">Senha</label><input type="password" id="employeePassword" class="form-input focus:border-green-400" placeholder="••••••••"></div>
+                <div><label class="block text-xs font-bold text-green-400 uppercase mb-2">Especialidade</label><textarea id="employeeSpecialty" class="form-input h-20 focus:border-green-400 custom-scrollbar" placeholder="Áreas de expertise..."></textarea></div>
+            </div>
+            <div class="flex gap-3 mt-auto border-t border-white/5 pt-6">
+                <button onclick="closeAdminEmployeeModal()" class="flex-1 bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-700 transition-colors border border-slate-700">Cancelar</button>
+                <button onclick="saveEmployee()" class="flex-1 bg-green-500 text-slate-900 font-bold py-3.5 rounded-xl hover:bg-green-400 transition-colors shadow-lg shadow-green-500/20">Salvar Funcionário</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ========================================== -->
     <!-- NOVA INTERFACE DO CHAT (Estilo Print)      -->
     <!-- ========================================== -->
@@ -496,6 +552,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
 
         <div class="chat-footer">
+            <button id="speakToEmployee" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-xs mr-2 transition-all" onclick="showEmployeeSelection()">👤 Funcionário</button>
             <input type="text" id="userInput" class="flex-1 bg-slate-900/80 border border-white/10 rounded-full py-3 px-5 text-white text-sm outline-none focus:border-purple-500/50 transition-all placeholder:text-slate-500" placeholder="Escreva a sua dúvida aqui...">
             <button id="sendMessage" class="bg-gradient-to-br from-cyan-400 to-purple-600 hover:from-cyan-300 hover:to-purple-500 w-11 h-11 flex flex-shrink-0 items-center justify-center rounded-full text-white transition-all transform hover:scale-105 shadow-lg shadow-purple-500/30">
                 <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
@@ -509,6 +566,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         document.addEventListener('mousemove', (e) => { glow.style.transform = `translate(${e.clientX - 300}px, ${e.clientY - 300}px)`; });
 
         let isAdmin = false;
+        let selectedEmployee = null; // Funcionário selecionado para chat
+        let isEmployeeMode = false; // Se está no modo de falar com funcionário
 
         function navigate(id) {
             if (id === 'admin' && !isAdmin) { alert('Acesso restrito a administradores.'); return navigate('home'); }
@@ -521,9 +580,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             document.getElementById('chatWindow').classList.remove('active');
         }
 
-        // --- SISTEMA DE DADOS: CATÁLOGO E PROJETOS ---
+        // --- SISTEMA DE DADOS: CATÁLOGO, PROJETOS E FUNCIONÁRIOS ---
         let catalogItems = [];
         let projectItems = [];
+        let employees = [];
+        let pendingMessages = []; // Mensagens aguardando resposta de funcionários
 
         const defaultCatalogItems = [
             { id: 1, type: 'produto', title: 'CLP Siemens S7-1200', desc: 'Controlador Lógico Programável compacto para automação de máquinas e processos industriais. Ideal para aplicações de médio porte com alta confiabilidade.', image: 'https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&w=600' },
@@ -548,8 +609,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         window.onload = () => {
             const savedCat = localStorage.getItem('autobot_catalog');
             const savedProj = localStorage.getItem('autobot_projects');
+            const savedEmp = localStorage.getItem('autobot_employees');
+            const savedMsg = localStorage.getItem('autobot_pending_messages');
             catalogItems = savedCat ? JSON.parse(savedCat) : defaultCatalogItems;
             projectItems = savedProj ? JSON.parse(savedProj) : defaultProjects;
+            employees = savedEmp ? JSON.parse(savedEmp) : [];
+            pendingMessages = savedMsg ? JSON.parse(savedMsg) : [];
             
             const savedCfg = localStorage.getItem('autobot_pro_cfg');
             if (savedCfg) appConfig = JSON.parse(savedCfg);
@@ -760,6 +825,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 
         function closeProjectModal(e) { if (!e || e.target.id === 'projectModal') document.getElementById('projectModal').classList.remove('active'); }
 
+        // --- GESTÃO DE FUNCIONÁRIOS ---
+        function openAdminEmployeeModal(id = null) {
+            const modal = document.getElementById('adminEmployeeModal');
+            if (id) {
+                const emp = employees.find(e => e.id == id);
+                document.getElementById('editEmployeeId').value = emp.id;
+                document.getElementById('employeeName').value = emp.name;
+                document.getElementById('employeeRole').value = emp.role;
+                document.getElementById('employeeEmail').value = emp.email;
+                document.getElementById('employeePassword').value = emp.password;
+                document.getElementById('employeeSpecialty').value = emp.specialty;
+                document.getElementById('employeeModalTitle').innerText = "Editar Funcionário";
+            } else {
+                document.getElementById('editEmployeeId').value = '';
+                document.getElementById('employeeName').value = '';
+                document.getElementById('employeeRole').value = '';
+                document.getElementById('employeeEmail').value = '';
+                document.getElementById('employeePassword').value = '';
+                document.getElementById('employeeSpecialty').value = '';
+                document.getElementById('employeeModalTitle').innerText = "Adicionar Funcionário";
+            }
+            modal.classList.add('active');
+        }
+
+        function closeAdminEmployeeModal(e) {
+            if (e && e.target !== document.getElementById('adminEmployeeModal') && e.target.tagName !== 'BUTTON') return;
+            document.getElementById('adminEmployeeModal').classList.remove('active');
+        }
+
+        function saveEmployee() {
+            const id = document.getElementById('editEmployeeId').value;
+            const name = document.getElementById('employeeName').value.trim();
+            const role = document.getElementById('employeeRole').value.trim();
+            const email = document.getElementById('employeeEmail').value.trim();
+            const password = document.getElementById('employeePassword').value.trim();
+            const specialty = document.getElementById('employeeSpecialty').value.trim();
+            
+            if (!name || !role || !email || !password) return alert("Preencha todos os campos obrigatórios!");
+            
+            if (id) {
+                const idx = employees.findIndex(e => e.id == id);
+                employees[idx] = { ...employees[idx], name, role, email, password, specialty };
+            } else {
+                employees.push({ id: Date.now(), name, role, email, password, specialty });
+            }
+            
+            localStorage.setItem('autobot_employees', JSON.stringify(employees));
+            closeAdminEmployeeModal(); renderAdminLists();
+        }
+
+        function deleteEmployee(id) {
+            if(!confirm("Excluir funcionário?")) return;
+            employees = employees.filter(e => e.id != id);
+            localStorage.setItem('autobot_employees', JSON.stringify(employees));
+            renderAdminLists();
+        }
+
         // --- RENDERIZAR LISTAS ADMIN ---
         function renderAdminLists() {
             const cl = document.getElementById('adminCatalogList'); cl.innerHTML = '';
@@ -767,6 +889,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             
             const pl = document.getElementById('adminProjectList'); pl.innerHTML = '';
             projectItems.forEach(p => pl.innerHTML += `<tr class="hover:bg-slate-800/30"><td class="px-4 py-3">${p.cat}</td><td class="px-4 py-3">${p.title}</td><td class="px-4 py-3 text-right"><button onclick="openAdminProjectModal(${p.id})" class="text-blue-400 hover:text-blue-300 mr-3">Editar</button><button onclick="deleteProject(${p.id})" class="text-red-400 hover:text-red-300">Excluir</button></td></tr>`);
+
+            const el = document.getElementById('adminEmployeeList'); el.innerHTML = '';
+            employees.forEach(e => el.innerHTML += `<tr class="hover:bg-slate-800/30"><td class="px-4 py-3">${e.name}</td><td class="px-4 py-3">${e.role}</td><td class="px-4 py-3">${e.email}</td><td class="px-4 py-3 text-right"><button onclick="openAdminEmployeeModal(${e.id})" class="text-green-400 hover:text-green-300 mr-3">Editar</button><button onclick="deleteEmployee(${e.id})" class="text-red-400 hover:text-red-300">Excluir</button></td></tr>`);
         }
 
         // --- AUTENTICAÇÃO ---
@@ -858,10 +983,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             document.getElementById('brandDisplay2').innerText = appConfig.name.split(' ')[1] ? appConfig.name.split(' ')[1].toUpperCase() : "BOT";
         }
 
+        function showEmployeeSelection() {
+            if (employees.length === 0) {
+                alert('Nenhum funcionário cadastrado ainda.');
+                return;
+            }
+            const employeeList = employees.map(e => `<button onclick="selectEmployee(${e.id})" class="block w-full text-left p-2 hover:bg-slate-700 rounded">${e.name} - ${e.role}</button>`).join('');
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
+            modal.innerHTML = `
+                <div class="bg-slate-800 p-6 rounded-lg max-w-md w-full mx-4">
+                    <h3 class="text-white text-lg font-bold mb-4">Selecione um Funcionário</h3>
+                    <div class="space-y-2">${employeeList}</div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="mt-4 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded">Cancelar</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function selectEmployee(id) {
+            selectedEmployee = employees.find(e => e.id == id);
+            isEmployeeMode = true;
+            document.getElementById('chatBotName').innerText = selectedEmployee.name;
+            document.querySelector('.status-dot').nextSibling.textContent = selectedEmployee.role;
+            document.getElementById('userInput').placeholder = `Fale com ${selectedEmployee.name}...`;
+            document.body.querySelector('.fixed')?.remove(); // Remove modal
+        }
+
         async function handleSend() {
             const input = document.getElementById('userInput'); const val = input.value.trim();
             if(!val) return;
             appendMsg('user', val); input.value = ''; document.getElementById('typingIndicatorWrapper').classList.remove('hidden');
+            
+            if (isEmployeeMode && selectedEmployee) {
+                // Modo funcionário: adicionar à lista de mensagens pendentes
+                const message = {
+                    id: Date.now(),
+                    employeeId: selectedEmployee.id,
+                    userMessage: val,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending'
+                };
+                pendingMessages.push(message);
+                localStorage.setItem('autobot_pending_messages', JSON.stringify(pendingMessages));
+                
+                setTimeout(() => {
+                    document.getElementById('typingIndicatorWrapper').classList.add('hidden');
+                    appendMsg('bot', `✅ Sua mensagem foi enviada para ${selectedEmployee.name}. Ele entrará em contato em breve através do email ${selectedEmployee.email} ou telefone.`);
+                }, 1500);
+                return;
+            }
             
             try {
                 const catalogContext = catalogItems.map(item => `- ${item.type}: ${item.title} (${item.desc})`).join('\n');
@@ -922,6 +1093,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 
         document.getElementById('closeChat').onclick = () => document.getElementById('chatWindow').classList.remove('active');
         document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter') handleSend(); };
+
+        // --- FUNCIONÁRIOS ---
+        let currentEmployee = null;
+
+        function employeeLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('empEmail').value;
+            const password = document.getElementById('empPassword').value;
+            const emp = employees.find(e => e.email === email && e.password === password);
+            if (emp) {
+                currentEmployee = emp;
+                navigate('employee-dashboard');
+                renderEmployeeMessages();
+            } else {
+                alert('Credenciais inválidas!');
+            }
+        }
+
+        function renderEmployeeMessages() {
+            const container = document.getElementById('employeeMessages');
+            const myMessages = pendingMessages.filter(m => m.employeeId == currentEmployee.id);
+            if (myMessages.length === 0) {
+                container.innerHTML = '<p class="text-slate-400">Nenhuma mensagem pendente.</p>';
+                return;
+            }
+            container.innerHTML = myMessages.map(m => `
+                <div class="glass-card p-4">
+                    <p class="text-white"><strong>Mensagem:</strong> ${m.userMessage}</p>
+                    <p class="text-slate-400 text-sm">Data: ${new Date(m.timestamp).toLocaleString()}</p>
+                    <button onclick="respondToMessage(${m.id})" class="mt-2 bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded">Marcar como Respondida</button>
+                </div>
+            `).join('');
+        }
+
+        function respondToMessage(id) {
+            pendingMessages = pendingMessages.filter(m => m.id != id);
+            localStorage.setItem('autobot_pending_messages', JSON.stringify(pendingMessages));
+            renderEmployeeMessages();
+        }
+
+        function employeeLogout() {
+            currentEmployee = null;
+            navigate('home');
+        }
 
         toggleAuthMode('login');
     </script>
