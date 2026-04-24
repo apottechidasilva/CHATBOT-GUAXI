@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         .chat-trigger:hover { transform: scale(1.1) rotate(10deg); box-shadow: 0 15px 35px rgba(139, 92, 246, 0.7); }
 
         #chatWindow {
-            position: fixed; bottom: 110px; right: 30px; width: 380px; height: 600px; 
+            position: fixed; bottom: 110px; right: 30px; width: 380px; height: 620px; 
             max-width: calc(100vw - 40px); max-height: calc(100vh - 140px);
             display: flex; flex-direction: column; z-index: 1001; 
             transform: translateY(30px) scale(0.9); opacity: 0; pointer-events: none;
@@ -506,7 +506,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                     <p class="text-[10px] text-cyan-400 uppercase font-bold leading-none">Assistente Online</p>
                 </div>
             </div>
-            <button id="closeChat" class="text-slate-400 hover:text-white transition-colors text-lg font-bold p-1">✕</button>
+            <div class="flex items-center gap-2">
+                <button id="speakToEmployee" class="text-slate-300 hover:text-white text-lg transition-colors" title="Falar com funcionário" onclick="showEmployeeSelection()">👤</button>
+                <button id="closeChat" class="text-slate-400 hover:text-white transition-colors text-lg font-bold p-1">✕</button>
+            </div>
         </div>
         
         <div class="chat-body" id="chatContainer">
@@ -528,7 +531,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         </div>
 
         <div class="chat-footer">
-            <button id="speakToEmployee" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-xs mr-2 transition-all" onclick="showEmployeeSelection()">👤 Funcionário</button>
             <input type="text" id="userInput" class="flex-1 bg-slate-900/80 border border-white/10 rounded-full py-3 px-5 text-white text-sm outline-none focus:border-purple-500/50 transition-all placeholder:text-slate-500" placeholder="Escreva a sua dúvida aqui...">
             <button id="sendMessage" class="bg-gradient-to-br from-cyan-400 to-purple-600 hover:from-cyan-300 hover:to-purple-500 w-11 h-11 flex flex-shrink-0 items-center justify-center rounded-full text-white transition-all transform hover:scale-105 shadow-lg shadow-purple-500/30">
                 <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
