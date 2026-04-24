@@ -239,11 +239,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 </div>
 
                 <div class="max-w-xs mx-auto w-full">
-                    <div class="flex justify-center gap-4 mb-6">
-                        <button type="button" id="user-client" class="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold" onclick="setUserType('client')">Cliente</button>
-                        <button type="button" id="user-employee" class="px-4 py-2 rounded-lg bg-slate-600 text-white font-bold" onclick="setUserType('employee')">Funcionário</button>
-                    </div>
-
                     <div class="flex justify-center gap-8 mb-10 font-bold text-sm">
                         <button type="button" id="tab-login" class="text-white border-b-2 border-white pb-1" onclick="toggleAuthMode('login')">ENTRAR</button>
                         <button type="button" id="tab-register" class="text-blue-200 pb-1 hover:text-white transition-colors" onclick="toggleAuthMode('register')">CADASTRAR</button>
@@ -549,7 +544,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         let isAdmin = false;
         let selectedEmployee = null; // Funcionário selecionado para chat
         let isEmployeeMode = false; // Se está no modo de falar com funcionário
-        let userType = 'client'; // 'client' ou 'employee'
 
         function navigate(id) {
             if (id === 'admin' && !isAdmin) { alert('Acesso restrito a administradores.'); return navigate('home'); }
@@ -566,6 +560,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         let catalogItems = [];
         let projectItems = [];
         let employees = [];
+        let clients = [];
         let pendingMessages = []; // Mensagens aguardando resposta de funcionários
 
         const defaultCatalogItems = [
@@ -592,10 +587,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             const savedCat = localStorage.getItem('autobot_catalog');
             const savedProj = localStorage.getItem('autobot_projects');
             const savedEmp = localStorage.getItem('autobot_employees');
+            const savedCli = localStorage.getItem('autobot_clients');
             const savedMsg = localStorage.getItem('autobot_pending_messages');
             catalogItems = savedCat ? JSON.parse(savedCat) : defaultCatalogItems;
             projectItems = savedProj ? JSON.parse(savedProj) : defaultProjects;
             employees = savedEmp ? JSON.parse(savedEmp) : [];
+            clients = savedCli ? JSON.parse(savedCli) : [];
             pendingMessages = savedMsg ? JSON.parse(savedMsg) : [];
             
             const savedCfg = localStorage.getItem('autobot_pro_cfg');
@@ -846,6 +843,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             
             if (!name || !role || !email || !password) return alert("Preencha todos os campos obrigatórios!");
             
+            // Verificar se o email já existe em funcionários ou clientes
+            const existingEmployee = employees.find(e => e.email === email && e.id != id);
+            const existingClient = clients.find(c => c.email === email);
+            if (existingEmployee || existingClient) return alert("Este email já está cadastrado!");
+            
             if (id) {
                 const idx = employees.findIndex(e => e.id == id);
                 employees[idx] = { ...employees[idx], name, role, email, password, specialty };
@@ -901,19 +903,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             e.preventDefault();
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
+            const name = document.getElementById('authName').value;
 
-            if (userType === 'employee') {
-                // Verificar se é funcionário
-                const emp = employees.find(e => e.email === email && e.password === password);
-                if (emp) {
-                    currentEmployee = emp;
-                    navigate('employee-dashboard');
-                    renderEmployeeMessages();
-                    return;
-                } else {
-                    alert('Credenciais de funcionário inválidas!');
-                    return;
-                }
+            if (currentAuthMode === 'register') {
+                // Verificar se email já existe
+                const existingEmployee = employees.find(e => e.email === email);
+                const existingClient = clients.find(c => c.email === email);
+                if (existingEmployee || existingClient) return alert("Este email já está cadastrado!");
+                
+                // Salvar novo cliente
+                clients.push({ id: Date.now(), name, email, password });
+                localStorage.setItem('autobot_clients', JSON.stringify(clients));
             }
 
             if (email === 'admin@autobot.com' && currentAuthMode === 'login') {
@@ -971,12 +971,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             localStorage.setItem('autobot_pro_cfg', JSON.stringify(appConfig));
             updateUI();
             alert("Informações base da IA salvas com sucesso!");
-        }
-
-        function setUserType(type) {
-            userType = type;
-            document.getElementById('user-client').className = type === 'client' ? 'px-4 py-2 rounded-lg bg-blue-600 text-white font-bold' : 'px-4 py-2 rounded-lg bg-slate-600 text-white font-bold';
-            document.getElementById('user-employee').className = type === 'employee' ? 'px-4 py-2 rounded-lg bg-green-600 text-white font-bold' : 'px-4 py-2 rounded-lg bg-slate-600 text-white font-bold';
         }
 
         function showEmployeeSelection() {
