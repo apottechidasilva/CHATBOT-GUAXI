@@ -206,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             <div class="flex items-center gap-3 font-bold text-2xl cursor-pointer" onclick="navigate('home')">
                 <!-- LOGO GUAXINIM NAVBAR -->
                 <div class="w-10 h-10 rounded-full border-2 border-cyan-400 overflow-hidden bg-slate-900 flex items-center justify-center shadow-[0_0_10px_rgba(0,242,255,0.3)]">
-                    <img src="guaxinim.jpg" alt="Guaxinim" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">
+                    <img src="avatar.jpg" alt="Avatar" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">
                 </div>
                 <div><span class="text-cyan-400" id="brandDisplay1">AUTO</span><span id="brandDisplay2">BOT</span></div>
             </div>
@@ -457,7 +457,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
     <div class="chat-trigger" id="openChat" onclick="handleChatRequest()">
         <div class="w-full h-full rounded-full bg-[#0056D2] flex items-center justify-center overflow-hidden border-2 border-white/20 relative">
             <!-- IMAGEM DO GUAXINIM (BOTÃO FLUTUANTE) -->
-            <img src="guaxinim.jpg" alt="Guaxinim" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">
+            <img src="avatar.jpg" alt="Avatar" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">
         </div>
         <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-[#020617] rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
     </div>
@@ -466,8 +466,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         <div class="chat-header">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full border border-purple-500/30 bg-slate-800 flex items-center justify-center overflow-hidden shadow-[0_0_10px_rgba(139,92,246,0.3)]">
-                    <!-- IMAGEM DO GUAXINIM (CABEÇALHO) -->
-                    <img src="guaxinim.jpg" alt="Guaxinim" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">
+                    <!-- IMAGEM DO AVATAR (CABEÇALHO) -->
+                    <img src="avatar.jpg" alt="Avatar" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">
                 </div>
                 <div>
                     <h4 class="text-white font-bold text-sm tracking-tight leading-none mb-1 flex items-center gap-2" id="chatBotName">AutoBot AI <div class="status-dot relative top-auto shadow-none"></div></h4>
@@ -480,16 +480,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         <div class="chat-body" id="chatContainer">
             <div class="flex items-end gap-2 w-full justify-start mb-2 animate-[slideIn_0.3s_ease-out]">
                 <div class="w-8 h-8 rounded-full border border-purple-500/30 flex-shrink-0 bg-slate-800 flex items-center justify-center overflow-hidden shadow-[0_0_10px_rgba(139,92,246,0.3)]">
-                    <!-- IMAGEM DO GUAXINIM (PRIMEIRA MENSAGEM) -->
-                    <img src="guaxinim.jpg" alt="Guaxinim" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">
+                    <!-- IMAGEM DO AVATAR (PRIMEIRA MENSAGEM) -->
+                    <img src="avatar.jpg" alt="Avatar" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">
                 </div>
                 <div class="msg msg-bot" id="welcomeMsg">Olá! Sou o assistente inteligente da AutoBot. Em que posso ajudar na sua automação hoje?</div>
             </div>
             
             <div class="flex items-end gap-2 w-full justify-start mb-2 hidden" id="typingIndicatorWrapper">
                 <div class="w-8 h-8 rounded-full border border-purple-500/30 flex-shrink-0 bg-slate-800 flex items-center justify-center overflow-hidden shadow-[0_0_10px_rgba(139,92,246,0.3)]">
-                    <!-- IMAGEM DO GUAXINIM (A PENSAR) -->
-                    <img src="guaxinim.jpg" alt="Guaxinim" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">
+                    <!-- IMAGEM DO AVATAR (A PENSAR) -->
+                    <img src="avatar.jpg" alt="Avatar" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">
                 </div>
                 <div class="typing-indicator active" id="typingIndicator"><span></span><span></span><span></span></div>
             </div>
@@ -889,7 +889,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             const wrapper = document.createElement('div');
             wrapper.className = `flex items-end gap-2 w-full ${role === 'user' ? 'justify-end' : 'justify-start'} mb-2 animate-[slideIn_0.3s_ease-out]`;
             
-            const mascotImg = `<img src="guaxinim.jpg" alt="Guaxinim" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">`;
+            const mascotImg = `<img src="avatar.jpg" alt="Avatar" class="w-full h-full object-cover" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=Raccoon&backgroundColor=transparent'">`;
 
             if (role === 'bot') {
                 wrapper.innerHTML = `
