@@ -1012,24 +1012,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 return;
             }
             
-            const employeeList = employees.map(e => `<button onclick="selectEmployee(${e.id})" class="block w-full text-left p-3 hover:bg-slate-700 rounded-lg border border-slate-600">${e.name} - ${e.role}</button>`).join('');
-            
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
-            modal.innerHTML = `
-                <div class="bg-slate-800 p-6 rounded-lg max-w-md w-full mx-4">
-                    <h3 class="text-white text-lg font-bold mb-4">Falar com Funcionário</h3>
-                    <div class="space-y-3 mb-4">
-                        <button onclick="notifyAllEmployees()" class="block w-full text-left p-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold">
-                            🔔 Notificar Todos os Funcionários
-                        </button>
-                        <div class="text-slate-400 text-sm mb-2">Ou selecione um funcionário específico:</div>
-                        ${employeeList}
-                    </div>
-                    <button onclick="this.parentElement.parentElement.remove()" class="mt-4 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded">Cancelar</button>
-                </div>
-            `;
-            document.body.appendChild(modal);
+            // Notificar todos os funcionários automaticamente
+            notifyAllEmployees();
         }
 
         function notifyAllEmployees() {
