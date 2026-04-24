@@ -40,6 +40,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
     echo $response;
     exit;
 }
+
+// --- STORAGE JSON PARA CONTAS ---
+$dataDir = __DIR__ . '/data';
+if (!is_dir($dataDir)) {
+    mkdir($dataDir, 0755, true);
+}
+function getStorageFilePath($type) {
+    $allowed = ['clients', 'employees'];
+    if (!in_array($type, $allowed, true)) {
+        return false;
+    }
+    return __DIR__ . '/data/' . $type . '.json';
+}
+function readStorage($type) {
+    $file = getStorageFilePath($type);
+    if (!$file) {
+        return [];
+    }
+    if (!file_exists($file)) {
+        file_put_contents($file, json_encode([]));
+    }
+    $content = file_get_contents($file);
+    $data = json_decode($content, true);
+    return is_array($data) ? $data : [];
+}
+function writeStorage($type, $data) {
+    $file = getStorageFilePath($type);
+    if (!$file) {
+        return false;
+    }
+    file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    return true;
+}
+
+if (isset($_GET['api']) && $_GET['api'] === 'storage') {
+    header('Content-Type: application/json');
+    $type = $_GET['type'] ?? '';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        echo json_encode(['success' => true, 'data' => readStorage($type)]);
+        exit;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $body = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($body) || !isset($body['data'])) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Invalid payload']);
+            exit;
+        }
+        if (!writeStorage($type, $body['data'])) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Invalid type']);
+            exit;
+        }
+        echo json_encode(['success' => true, 'data' => $body['data']]);
+        exit;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-PT">
@@ -585,16 +644,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             { id: 2, cat: 'Energia', title: 'Otimização de Smart Grid', image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1200', desc: 'Modernização de centro de controlo de energia com Sistema SCADA avançado e algoritmos de previsão.', results: 'Poupança de 22% na rede. Resposta a falhas baixou para 3 minutos.' }
         ];
 
-        window.onload = () => {
+        async function loadDataFromServer(type) {
+            try {
+                const response = await fetch(`?api=storage&type=${type}`);
+                if (!response.ok) throw new Error('Fetch failed');
+                const json = await response.json();
+                return Array.isArray(json.data) ? json.data : [];
+            } catch (error) {
+                return null;
+            }
+        }
+
+        async function saveDataToServer(type, data) {
+            try {
+                const response = await fetch(`?api=storage&type=${type}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ data })
+                });
+                if (!response.ok) return false;
+                const json = await response.json();
+                return json.success === true;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        window.onload = async () => {
             const savedCat = localStorage.getItem('autobot_catalog');
             const savedProj = localStorage.getItem('autobot_projects');
             const savedEmp = localStorage.getItem('autobot_employees');
             const savedCli = localStorage.getItem('autobot_clients');
             const savedMsg = localStorage.getItem('autobot_pending_messages');
+
+            const serverEmp = await loadDataFromServer('employees');
+            const serverCli = await loadDataFromServer('clients');
+
             catalogItems = savedCat ? JSON.parse(savedCat) : defaultCatalogItems;
             projectItems = savedProj ? JSON.parse(savedProj) : defaultProjects;
-            employees = savedEmp ? JSON.parse(savedEmp) : [];
-            clients = savedCli ? JSON.parse(savedCli) : [];
+            employees = Array.isArray(serverEmp) ? serverEmp : (savedEmp ? JSON.parse(savedEmp) : []);
+            clients = Array.isArray(serverCli) ? serverCli : (savedCli ? JSON.parse(savedCli) : []);
             pendingMessages = savedMsg ? JSON.parse(savedMsg) : [];
             
             const savedCfg = localStorage.getItem('autobot_pro_cfg');
@@ -835,7 +924,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             document.getElementById('adminEmployeeModal').classList.remove('active');
         }
 
-        function saveEmployee() {
+        async function saveEmployee() {
             const id = document.getElementById('editEmployeeId').value;
             const name = document.getElementById('employeeName').value.trim();
             const role = document.getElementById('employeeRole').value.trim();
@@ -858,6 +947,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             }
             
             localStorage.setItem('autobot_employees', JSON.stringify(employees));
+            await saveDataToServer('employees', employees);
             closeAdminEmployeeModal(); renderAdminLists();
         }
 
@@ -901,7 +991,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             }
         }
 
-        function processAuth(e) {
+        async function processAuth(e) {
             e.preventDefault();
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
@@ -919,6 +1009,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 // Salvar novo cliente
                 clients.push({ id: Date.now(), name, email, password });
                 localStorage.setItem('autobot_clients', JSON.stringify(clients));
+                await saveDataToServer('clients', clients);
             } else if (currentAuthMode === 'login') {
                 // Verificar se é funcionário
                 const emp = employees.find(e => e.email === email);
