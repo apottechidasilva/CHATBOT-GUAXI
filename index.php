@@ -1008,29 +1008,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 
         function showEmployeeSelection() {
             if (employees.length === 0) {
-                alert('Nenhum funcionário cadastrado ainda.');
+                alert('Nenhum funcionário cadastrado ainda. Entre em contato conosco pelo email ou telefone.');
                 return;
             }
-            const employeeList = employees.map(e => `<button onclick="selectEmployee(${e.id})" class="block w-full text-left p-2 hover:bg-slate-700 rounded">${e.name} - ${e.role}</button>`).join('');
+            
+            const employeeList = employees.map(e => `<button onclick="selectEmployee(${e.id})" class="block w-full text-left p-3 hover:bg-slate-700 rounded-lg border border-slate-600">${e.name} - ${e.role}</button>`).join('');
+            
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
             modal.innerHTML = `
                 <div class="bg-slate-800 p-6 rounded-lg max-w-md w-full mx-4">
-                    <h3 class="text-white text-lg font-bold mb-4">Selecione um Funcionário</h3>
-                    <div class="space-y-2">${employeeList}</div>
+                    <h3 class="text-white text-lg font-bold mb-4">Falar com Funcionário</h3>
+                    <div class="space-y-3 mb-4">
+                        <button onclick="notifyAllEmployees()" class="block w-full text-left p-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-semibold">
+                            🔔 Notificar Todos os Funcionários
+                        </button>
+                        <div class="text-slate-400 text-sm mb-2">Ou selecione um funcionário específico:</div>
+                        ${employeeList}
+                    </div>
                     <button onclick="this.parentElement.parentElement.remove()" class="mt-4 bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded">Cancelar</button>
                 </div>
             `;
             document.body.appendChild(modal);
         }
 
-        function selectEmployee(id) {
-            selectedEmployee = employees.find(e => e.id == id);
+        function notifyAllEmployees() {
+            // Fechar modal
+            document.body.querySelector('.fixed')?.remove();
+            
+            // Entrar no modo funcionário geral (qualquer funcionário pode responder)
+            selectedEmployee = null; // Nenhum funcionário específico
             isEmployeeMode = true;
-            document.getElementById('chatBotName').innerText = selectedEmployee.name;
-            document.querySelector('.status-dot').nextSibling.textContent = selectedEmployee.role;
-            document.getElementById('userInput').placeholder = `Fale com ${selectedEmployee.name}...`;
-            document.body.querySelector('.fixed')?.remove(); // Remove modal
+            document.getElementById('chatBotName').innerText = 'Equipe AutoBot';
+            document.querySelector('.status-dot').nextSibling.textContent = 'Suporte Especializado';
+            document.getElementById('userInput').placeholder = 'Fale com nossa equipe...';
+            
+            appendMsg('bot', '✅ Notificação enviada para toda a equipe! O primeiro funcionário disponível entrará em contato.');
         }
 
         async function handleSend() {
@@ -1053,6 +1066,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 setTimeout(() => {
                     document.getElementById('typingIndicatorWrapper').classList.add('hidden');
                     appendMsg('bot', `✅ Sua mensagem foi enviada para ${selectedEmployee.name}. Ele entrará em contato em breve através do email ${selectedEmployee.email} ou telefone.`);
+                }, 1500);
+                return;
+            } else if (isEmployeeMode && !selectedEmployee) {
+                // Modo notificação geral: enviar para todos os funcionários
+                employees.forEach(emp => {
+                    const message = {
+                        id: Date.now() + Math.random(), // IDs únicos
+                        employeeId: emp.id,
+                        userMessage: val,
+                        timestamp: new Date().toISOString(),
+                        status: 'general',
+                        isGeneral: true
+                    };
+                    pendingMessages.push(message);
+                });
+                localStorage.setItem('autobot_pending_messages', JSON.stringify(pendingMessages));
+                
+                setTimeout(() => {
+                    document.getElementById('typingIndicatorWrapper').classList.add('hidden');
+                    appendMsg('bot', '✅ Sua mensagem foi enviada para toda a equipe! O primeiro funcionário disponível entrará em contato.');
                 }, 1500);
                 return;
             }
@@ -1123,23 +1156,105 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         function renderEmployeeMessages() {
             const container = document.getElementById('employeeMessages');
             const myMessages = pendingMessages.filter(m => m.employeeId == currentEmployee.id);
-            if (myMessages.length === 0) {
-                container.innerHTML = '<p class="text-slate-400">Nenhuma mensagem pendente.</p>';
-                return;
+            const generalMessages = pendingMessages.filter(m => m.isGeneral && m.status === 'general');
+            
+            let html = '';
+            
+            // Mensagens específicas do funcionário
+            if (myMessages.length > 0) {
+                html += '<h3 class="text-white text-lg font-bold mb-4">Suas Mensagens</h3>';
+                html += myMessages.map(m => `
+                    <div class="glass-card p-4 mb-4">
+                        <p class="text-white"><strong>Mensagem:</strong> ${m.userMessage}</p>
+                        <p class="text-slate-400 text-sm">Data: ${new Date(m.timestamp).toLocaleString()}</p>
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="respondToMessage(${m.id})" class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded text-sm">Marcar como Respondida</button>
+                            ${getTransferOptions(m)}
+                        </div>
+                    </div>
+                `).join('');
             }
-            container.innerHTML = myMessages.map(m => `
-                <div class="glass-card p-4">
-                    <p class="text-white"><strong>Mensagem:</strong> ${m.userMessage}</p>
-                    <p class="text-slate-400 text-sm">Data: ${new Date(m.timestamp).toLocaleString()}</p>
-                    <button onclick="respondToMessage(${m.id})" class="mt-2 bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded">Marcar como Respondida</button>
-                </div>
-            `).join('');
+            
+            // Mensagens gerais disponíveis
+            if (generalMessages.length > 0) {
+                html += '<h3 class="text-white text-lg font-bold mb-4 mt-6">Mensagens Gerais (Disponíveis)</h3>';
+                html += generalMessages.map(m => `
+                    <div class="glass-card p-4 mb-4 border-l-4 border-blue-500">
+                        <p class="text-white"><strong>Mensagem Geral:</strong> ${m.userMessage}</p>
+                        <p class="text-slate-400 text-sm">Data: ${new Date(m.timestamp).toLocaleString()}</p>
+                        <button onclick="assumeGeneralMessage(${m.id})" class="mt-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded text-sm">Assumir Esta Mensagem</button>
+                    </div>
+                `).join('');
+            }
+            
+            if (myMessages.length === 0 && generalMessages.length === 0) {
+                html = '<p class="text-slate-400">Nenhuma mensagem pendente.</p>';
+            }
+            
+            container.innerHTML = html;
         }
 
-        function respondToMessage(id) {
-            pendingMessages = pendingMessages.filter(m => m.id != id);
+        function getTransferOptions(message) {
+            // Encontrar funcionários com cargo superior (baseado na hierarquia)
+            const superiorRoles = {
+                'Estagiário': ['Analista', 'Coordenador', 'Gerente', 'Diretor'],
+                'Analista': ['Coordenador', 'Gerente', 'Diretor'],
+                'Coordenador': ['Gerente', 'Diretor'],
+                'Gerente': ['Diretor'],
+                'Diretor': []
+            };
+            
+            const superiors = employees.filter(e => 
+                e.id !== currentEmployee.id && 
+                superiorRoles[currentEmployee.role]?.includes(e.role)
+            );
+            
+            if (superiors.length === 0) return '';
+            
+            const options = superiors.map(s => `<option value="${s.id}">${s.name} - ${s.role}</option>`).join('');
+            return `<select onchange="transferMessage(${message.id}, this.value)" class="bg-slate-600 text-white px-2 py-1 rounded text-sm">
+                <option value="">Transferir para...</option>
+                ${options}
+            </select>`;
+        }
+
+        function assumeGeneralMessage(messageId) {
+            // Encontrar todas as mensagens gerais com o mesmo userMessage e timestamp
+            const message = pendingMessages.find(m => m.id == messageId && m.isGeneral);
+            if (!message) return;
+            
+            // Remover todas as cópias desta mensagem geral
+            pendingMessages = pendingMessages.filter(m => 
+                !(m.isGeneral && m.userMessage === message.userMessage && m.timestamp === message.timestamp)
+            );
+            
+            // Adicionar como mensagem específica para este funcionário
+            const newMessage = {
+                id: Date.now(),
+                employeeId: currentEmployee.id,
+                userMessage: message.userMessage,
+                timestamp: message.timestamp,
+                status: 'pending'
+            };
+            pendingMessages.push(newMessage);
+            
             localStorage.setItem('autobot_pending_messages', JSON.stringify(pendingMessages));
             renderEmployeeMessages();
+            
+            alert('Mensagem assumida com sucesso!');
+        }
+
+        function transferMessage(messageId, targetEmployeeId) {
+            if (!targetEmployeeId) return;
+            
+            const message = pendingMessages.find(m => m.id == messageId);
+            if (!message) return;
+            
+            message.employeeId = parseInt(targetEmployeeId);
+            localStorage.setItem('autobot_pending_messages', JSON.stringify(pendingMessages));
+            renderEmployeeMessages();
+            
+            alert('Mensagem transferida com sucesso!');
         }
 
         function employeeLogout() {
