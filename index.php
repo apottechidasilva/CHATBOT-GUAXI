@@ -217,8 +217,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 <a onclick="navigate('sobre')" class="nav-link" id="nav-sobre">Sobre Nós</a>
                 <a onclick="navigate('admin')" class="nav-link text-amber-400 hover:text-amber-300 hidden" id="nav-admin">Admin</a>
                 
-                <a onclick="navigate('employee-login')" class="nav-link" id="nav-employee">Funcionários</a>
-                
                 <button onclick="navigate('login')" class="btn-primary text-xs py-2 px-6 ml-4 shadow-lg shadow-cyan-500/20" id="nav-loginBtn">Fazer Login</button>
             </div>
         </div>
@@ -241,6 +239,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 </div>
 
                 <div class="max-w-xs mx-auto w-full">
+                    <div class="flex justify-center gap-4 mb-6">
+                        <button type="button" id="user-client" class="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold" onclick="setUserType('client')">Cliente</button>
+                        <button type="button" id="user-employee" class="px-4 py-2 rounded-lg bg-slate-600 text-white font-bold" onclick="setUserType('employee')">Funcionário</button>
+                    </div>
+
                     <div class="flex justify-center gap-8 mb-10 font-bold text-sm">
                         <button type="button" id="tab-login" class="text-white border-b-2 border-white pb-1" onclick="toggleAuthMode('login')">ENTRAR</button>
                         <button type="button" id="tab-register" class="text-blue-200 pb-1 hover:text-white transition-colors" onclick="toggleAuthMode('register')">CADASTRAR</button>
@@ -382,23 +385,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
                 <thead class="text-xs text-green-400 uppercase bg-slate-800/50"><tr><th class="px-4 py-3">Nome</th><th class="px-4 py-3">Cargo</th><th class="px-4 py-3">Email</th><th class="px-4 py-3 text-right">Ações</th></tr></thead>
                 <tbody id="adminEmployeeList" class="divide-y divide-slate-700/50"></tbody>
             </table></div>
-        </div>
-    </main>
-
-    <main id="page-employee-login" class="page max-w-md mx-auto px-6 pt-16 pb-20">
-        <div class="glass-card p-8 rounded-[2rem] shadow-2xl">
-            <h2 class="text-2xl font-bold text-white mb-6 text-center">Área do Funcionário</h2>
-            <form onsubmit="employeeLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-cyan-400 mb-2">Email:</label>
-                    <input type="email" id="empEmail" class="form-input" required placeholder="seu@email.com">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-cyan-400 mb-2">Senha:</label>
-                    <input type="password" id="empPassword" class="form-input" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="w-full btn-primary">Entrar</button>
-            </form>
         </div>
     </main>
 
@@ -563,6 +549,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
         let isAdmin = false;
         let selectedEmployee = null; // Funcionário selecionado para chat
         let isEmployeeMode = false; // Se está no modo de falar com funcionário
+        let userType = 'client'; // 'client' ou 'employee'
 
         function navigate(id) {
             if (id === 'admin' && !isAdmin) { alert('Acesso restrito a administradores.'); return navigate('home'); }
@@ -915,6 +902,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
 
+            if (userType === 'employee') {
+                // Verificar se é funcionário
+                const emp = employees.find(e => e.email === email && e.password === password);
+                if (emp) {
+                    currentEmployee = emp;
+                    navigate('employee-dashboard');
+                    renderEmployeeMessages();
+                    return;
+                } else {
+                    alert('Credenciais de funcionário inválidas!');
+                    return;
+                }
+            }
+
             if (email === 'admin@autobot.com' && currentAuthMode === 'login') {
                 if (password === 'admin123') { isAdmin = true; document.getElementById('nav-admin').classList.remove('hidden'); }
                 else { return alert('Senha de administrador incorreta!'); }
@@ -942,7 +943,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 
         function logout() {
             if(!confirm("Deseja terminar a sessão?")) return;
-            isLoggedIn = false; isAdmin = false;
+            isLoggedIn = false; isAdmin = false; currentEmployee = null;
             const loginBtn = document.getElementById('nav-loginBtn');
             loginBtn.innerText = "Fazer Login";
             loginBtn.classList.replace("border-red-500", "btn-primary");
@@ -972,10 +973,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
             alert("Informações base da IA salvas com sucesso!");
         }
 
-        function updateUI() {
-            document.getElementById('chatBotName').innerText = appConfig.name + " AI";
-            document.getElementById('brandDisplay1').innerText = appConfig.name.split(' ')[0].toUpperCase();
-            document.getElementById('brandDisplay2').innerText = appConfig.name.split(' ')[1] ? appConfig.name.split(' ')[1].toUpperCase() : "BOT";
+        function setUserType(type) {
+            userType = type;
+            document.getElementById('user-client').className = type === 'client' ? 'px-4 py-2 rounded-lg bg-blue-600 text-white font-bold' : 'px-4 py-2 rounded-lg bg-slate-600 text-white font-bold';
+            document.getElementById('user-employee').className = type === 'employee' ? 'px-4 py-2 rounded-lg bg-green-600 text-white font-bold' : 'px-4 py-2 rounded-lg bg-slate-600 text-white font-bold';
         }
 
         function showEmployeeSelection() {
@@ -1091,20 +1092,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['api']) && $_GET['api']
 
         // --- FUNCIONÁRIOS ---
         let currentEmployee = null;
-
-        function employeeLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('empEmail').value;
-            const password = document.getElementById('empPassword').value;
-            const emp = employees.find(e => e.email === email && e.password === password);
-            if (emp) {
-                currentEmployee = emp;
-                navigate('employee-dashboard');
-                renderEmployeeMessages();
-            } else {
-                alert('Credenciais inválidas!');
-            }
-        }
 
         function renderEmployeeMessages() {
             const container = document.getElementById('employeeMessages');
